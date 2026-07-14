@@ -6,6 +6,12 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/model.d.ts",
+      "default": "./dist/model.js"
+    }
+  },
   "types": "dist/models.d.ts",
   "dependencies": {
     "@types/node": "^26.1.1",
