@@ -1,0 +1,13 @@
+{
+  "name": "notcatan-shared",
+  "version": "1.0.0",
+  "main": "dist/models.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "types": "dist/models.d.ts",
+  "dependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
+}
