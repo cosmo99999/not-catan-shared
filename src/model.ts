@@ -205,6 +205,7 @@ export class Player {
   structures: Structure[] = [];
   resources: Resource[] = [];
   devCards: DevCard[] = [];
+  playedDevCards: DevCard[] = [];
   constructor(id: number, c: Colour) {
     this.id = id;
     this.colour = c;
