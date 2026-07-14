@@ -1,9 +1,10 @@
 {
   "name": "notcatan-shared",
   "version": "1.0.0",
-  "main": "dist/models.js",
+  "main": "dist/models.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "types": "dist/models.d.ts",
   "dependencies": {

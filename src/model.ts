@@ -1,4 +1,3 @@
-import { get } from "node:http";
 
 const offsets: [number, number][] = [[0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0]];
 const tilePositon: [number, number][] = [
@@ -56,7 +55,7 @@ function getRandomInt(min: number, max: number): number {
   // The maximum is exclusive and the minimum is inclusive
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
-enum Resource {
+export enum Resource {
   Brick,
   Wood,
   Sheep,
@@ -64,24 +63,24 @@ enum Resource {
   Ore,
   None,
 }
-enum StructureType {
+export enum StructureType {
   Settlement,
   City,
   Road
 }
-enum Colour {
+export enum Colour {
   Blue,
   Orange,
   Red,
   White
 }
-class Card {
+export class Card {
   resource: Resource;
   constructor(resource: Resource) {
     this.resource = resource;
   }
 }
-class Structure {
+export class Structure {
   id: number;
   type: StructureType;
   colour: Colour;
@@ -98,7 +97,7 @@ class Structure {
     }
   }
 }
-class Port {
+export class Port {
   id: number;
   rate: number = -1;
   resource: Resource = Resource.None;
@@ -115,7 +114,7 @@ class Port {
     }
   }
 }
-class Edge {
+export class Edge {
   id: number;
   vertices: [Vertice, Vertice];
   tiles: Tile[] = [];
@@ -133,7 +132,7 @@ class Edge {
     }
   }
 }
-class Tile {
+export class Tile {
   id: number;
   r: number;
   q: number;
@@ -165,7 +164,7 @@ class Tile {
     }
   }
 }
-class Vertice {
+export class Vertice {
   id: number;
   edges: Edge[] = [];
   port?: Port;
@@ -188,7 +187,7 @@ class Vertice {
     }
   }
 }
-class Player {
+export class Player {
   id: number;
   name?: string;
   victoryPoints: number = 0;
@@ -370,4 +369,84 @@ export class Game {
     this.players.push(p4);
 
   }
+}
+export function buildFromJSON(game: any): Game {
+  const tiles = game.Tiles;
+  const vertices = game.Vertices;
+  const edges = game.Edges;
+  const players = game.Players;
+  const ports = game.Ports;
+  const structures = game.Structures;
+
+  const tileMap = new Map<number, Tile>();
+  const verticeMap = new Map<number, Vertice>();
+  const edgeMap = new Map<number, Edge>();
+  const portMap = new Map<number, Port>();
+  const structureMap = new Map<number, Structure>();
+
+  for (let i = 0; i < tiles.length; i++) {
+    const data = tiles[i];
+    const t = new Tile(data.id, data.q, data.r);
+    tileMap.set(t.id, t);
+  }
+  for (let i = 0; i < structures.length; i++) {
+    const data = structures[i];
+    const t = new Structure(data.id, data.colour, data.type);
+    structureMap.set(t.id, t);
+  }
+  for (let i = 0; i < ports.length; i++) {
+    const data = ports[i];
+    const t = new Port(data.id, data.rate, data.resource);
+    portMap.set(t.id, t);
+  }
+  for (let i = 0; i < vertices.length; i++) {
+    const data = vertices[i];
+    const v = new Vertice(data.id);
+    verticeMap.set(v.id, v);
+  }
+  for (let i = 0; i < edges.length; i++) {
+    const data = edges[i];
+    const vIds = data.vertexIds;
+    const e = new Edge(data.id, verticeMap.get(vIds[0])!, verticeMap.get(vIds[1])!);
+    edgeMap.set(e.id, e);
+  }
+
+  for (const t of tiles) {
+    const tile = tileMap.get(t.id)!;
+    tile.resource = t.resource;
+    tile.value = t.value;
+    tile.xPos = t.xPos;
+    tile.yPos = t.yPos;
+    tile.vertices = t.vertexIds.map((id: number) => verticeMap.get(id));
+    tile.edges = t.edgeIds.map((id: number) => edgeMap.get(id));
+  }
+  for (const v of vertices) {
+    const vertice = verticeMap.get(v.id)!;
+    vertice.xPos = v.xPos;
+    vertice.yPos = v.yPos;
+    if (v.portId !== undefined) {
+      vertice.port = portMap.get(v.portId);
+    } else {
+      vertice.port = undefined;
+    }
+    vertice.tiles = v.tileIds.map((id: number) => tileMap.get(id));
+    vertice.structure = structureMap.get(v.structureId);
+    vertice.edges = v.edgeIds.map((id: number) => edgeMap.get(id));
+  }
+  for (const e of edges) {
+    const edge = edgeMap.get(e.id)!;
+    edge.structure = e.structure;
+    edge.tiles = e.tileIds.map((id: number) => tileMap.get(id));
+    edge.vertices = e.vertexIds.map((id: number) => verticeMap.get(id));
+  }
+  const g = new Game();
+
+  g.tiles = [...tileMap.values()];
+  g.vertices = [...verticeMap.values()];
+  g.edges = [...edgeMap.values()];
+  g.ports = ports;
+  g.structures = structures;
+  g.players = players;
+  return g;
+
 }
