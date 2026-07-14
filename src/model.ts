@@ -359,6 +359,10 @@ export class Game {
     const p2 = new Player(1, Colour.White);
     const p3 = new Player(2, Colour.Orange);
     const p4 = new Player(3, Colour.Red);
+    p1.name = "rory";
+    p2.name = "alec";
+    p3.name = "milo";
+    p4.name = "ham";
     p1.cards.push(new Card(Resource.Brick));
     p2.cards.push(new Card(Resource.Sheep));
     p2.cards.push(new Card(Resource.Sheep));
