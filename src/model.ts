@@ -216,6 +216,7 @@ export class Player {
       structureIds: this.structures.map(t => t.id),
       colour: this.colour,
       devCards: this.devCards,
+      playedDevCards: this.devCards,
       resources: this.resources,
       name: this.name,
     }
