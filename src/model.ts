@@ -9,6 +9,7 @@ const possilberesources = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4]
 const portNums = [0, 1, 2, 3, 4, 5, 5, 5, 5];
 const portSpacings = [3, 4, 3, 3, 3, 3, 3, 4, 3];
 const portVertexOrderedIds = [26, 27, 24, 25, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 50, 53];
+
 const size = 65;
 function hexCorner(q: number, r: number, i: number) {
   const { x: cx, y: cy } = axialToPixel(q, r);
@@ -74,10 +75,19 @@ export enum Colour {
   Red,
   White
 }
-export class Card {
-  resource: Resource;
-  constructor(resource: Resource) {
-    this.resource = resource;
+export enum DevCardType {
+  Knight,
+  RoadBuilding,
+  YearOfPlenty,
+  Monopoly,
+  VP,
+}
+export class DevCard {
+  id: number;
+  type: DevCardType;
+  constructor(id: number, type: DevCardType) {
+    this.type = type;
+    this.id = id;
   }
 }
 export class Structure {
@@ -193,7 +203,8 @@ export class Player {
   victoryPoints: number = 0;
   colour: Colour;
   structures: Structure[] = [];
-  cards: Card[] = [];
+  resources: Resource[] = [];
+  devCards: DevCard[] = [];
   constructor(id: number, c: Colour) {
     this.id = id;
     this.colour = c;
@@ -203,7 +214,8 @@ export class Player {
       id: this.id,
       structureIds: this.structures.map(t => t.id),
       colour: this.colour,
-      cards: this.cards,
+      devCards: this.devCards,
+      resources: this.resources,
       name: this.name,
     }
   }
@@ -215,7 +227,7 @@ export class Game {
   players: Player[] = [];
   ports: Port[] = [];
   structures: Structure[] = [];
-
+  devCards: DevCard[] = [];
 
   constructor() {
     this.buildBoard();
@@ -265,6 +277,21 @@ export class Game {
       }
       tiles.push(tile);
     });
+
+    let devCardCounter = 0;
+    for (let i = 0; i < 25; i++) {
+      if (i < 14) {
+        this.devCards.push(new DevCard(devCardCounter++, DevCardType.Knight));
+      } else if (i < 19) {
+        this.devCards.push(new DevCard(devCardCounter++, DevCardType.VP));
+      } else if (i < 21) {
+        this.devCards.push(new DevCard(devCardCounter++, DevCardType.RoadBuilding));
+      } else if (i < 23) {
+        this.devCards.push(new DevCard(devCardCounter++, DevCardType.Monopoly));
+      } else {
+        this.devCards.push(new DevCard(devCardCounter++, DevCardType.YearOfPlenty));
+      }
+    }
     this.tiles = tiles;
     this.edges = [...edgeLookup.values()];
     this.vertices = [...vertexLookup.values()];
@@ -331,6 +358,7 @@ export class Game {
       Players: this.players.map(p => p.toJSON()),
       Ports: this.ports.map(p => p.toJSON()),
       Structures: this.structures.map(s => s.toJSON()),
+      DevCards: this.devCards,
     }
   }
   seed() {
@@ -364,10 +392,10 @@ export class Game {
     p2.name = "alec";
     p3.name = "milo";
     p4.name = "ham";
-    p1.cards.push(new Card(Resource.Brick));
-    p2.cards.push(new Card(Resource.Sheep));
-    p2.cards.push(new Card(Resource.Sheep));
-    p2.cards.push(new Card(Resource.Ore));
+    p1.resources.push(Resource.Brick);
+    p2.resources.push(Resource.Sheep);
+    p2.resources.push(Resource.Sheep));
+    p2.resources.push(Resource.Ore);
     this.players.push(p1);
     this.players.push(p2);
     this.players.push(p3);
@@ -382,6 +410,7 @@ export function buildFromJSON(game: any): Game {
   const players = game.Players;
   const ports = game.Ports;
   const structures = game.Structures;
+  const devCards = game.devCards;
 
   const tileMap = new Map<number, Tile>();
   const verticeMap = new Map<number, Vertice>();
