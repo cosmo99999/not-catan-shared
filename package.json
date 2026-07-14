@@ -2,6 +2,7 @@
   "name": "notcatan-shared",
   "version": "1.0.0",
   "main": "dist/models.js",
+  "types": "dist/model.d.ts",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
@@ -12,7 +13,6 @@
       "default": "./dist/model.js"
     }
   },
-  "types": "dist/models.d.ts",
   "dependencies": {
     "@types/node": "^26.1.1",
     "typescript": "^7.0.2"
