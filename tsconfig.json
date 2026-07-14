@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "nodenext",
-    "type": "module",
+    "types": [
+      "module"
+    ],
     "declaration": true,
     "outDir": "dist",
     "rootDir": "src",
