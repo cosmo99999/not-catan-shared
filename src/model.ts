@@ -356,9 +356,9 @@ export class Game {
     //   this.structures.push(s);
     // }
     const p1 = new Player(0, Colour.Blue);
-    const p2 = new Player(0, Colour.White);
-    const p3 = new Player(0, Colour.Orange);
-    const p4 = new Player(0, Colour.Red);
+    const p2 = new Player(1, Colour.White);
+    const p3 = new Player(2, Colour.Orange);
+    const p4 = new Player(3, Colour.Red);
     p1.cards.push(new Card(Resource.Brick));
     p2.cards.push(new Card(Resource.Sheep));
     p2.cards.push(new Card(Resource.Sheep));
