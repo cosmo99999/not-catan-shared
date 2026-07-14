@@ -394,7 +394,7 @@ export class Game {
     p4.name = "ham";
     p1.resources.push(Resource.Brick);
     p2.resources.push(Resource.Sheep);
-    p2.resources.push(Resource.Sheep));
+    p2.resources.push(Resource.Sheep);
     p2.resources.push(Resource.Ore);
     this.players.push(p1);
     this.players.push(p2);
@@ -481,6 +481,7 @@ export function buildFromJSON(game: any): Game {
   g.ports = ports;
   g.structures = structures;
   g.players = players;
+  g.devCards = devCards;
   return g;
 
 }
