@@ -19,7 +19,7 @@ export function ValidSettlementPositions(game: Game, player: Player): number[] {
   const allVerts = [...game.vertices];
   const potential = allVerts.filter(v => !v.neighbourHasStructure());
   const settlements = player.structures?.filter(s => s.type == StructureType.Settlement).length;
-  if (settlements < 2) {
+  if (settlements < 2 || !settlements) {
     return potential.map(v => v.id);
   } else {
     return potential.filter(v => v.hasJoiningRoad(player)).map(v => v.id);
