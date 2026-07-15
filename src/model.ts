@@ -383,8 +383,9 @@ export class Game {
       Players: this.players.map(p => p.toJSON()),
       Ports: this.ports.map(p => p.toJSON()),
       Structures: this.structures.map(s => s.toJSON()),
-      DevCards: this.devCards,
-      GameState: this.gameState,
+      devCards: this.devCards,
+      gameState: this.gameState,
+      currentTurnPlayer: this.currentTurnPlayer
     }
   }
   seed() {
