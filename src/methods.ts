@@ -92,7 +92,7 @@ export function canAfford(type: Purchase, resources: Resource[]): boolean {
   }
   return false;
 }
-export function makePurchase(type: Purchase, player: Player) {
+export function makePurchase(type: Purchase, player: Player): Player {
   switch (type) {
     case Purchase.City: {
       removeResource(Resource.Wheat, 2, player);
@@ -114,9 +114,10 @@ export function makePurchase(type: Purchase, player: Player) {
       removeResource(Resource.Ore, 1, player);
     }
   }
+  return player;
 
 }
-export function BuildCity(vertex: Vertice, player: Player, game: Game) {
+export function BuildCity(vertex: Vertice, player: Player, game: Game): Game {
   const c = new Structure(
     player.colour,
     StructureType.Settlement,
@@ -129,8 +130,9 @@ export function BuildCity(vertex: Vertice, player: Player, game: Game) {
   vertex.structure = c;
   game.structures.push(c);
   player.structures.push(c);
+  return game;
 }
-export function BuildSettlement(vertex: Vertice, player: Player, game: Game) {
+export function BuildSettlement(vertex: Vertice, player: Player, game: Game): Game {
   const s = new Structure(
     player.colour,
     StructureType.Settlement,
@@ -139,8 +141,9 @@ export function BuildSettlement(vertex: Vertice, player: Player, game: Game) {
   vertex.structure = s;
   game.structures.push(s);
   player.structures.push(s);
+  return game;
 }
-export function BuildRoad(edge: Edge, player: Player, game: Game) {
+export function BuildRoad(edge: Edge, player: Player, game: Game): Game {
   const r = new Structure(
     player.colour,
     StructureType.Road,
@@ -149,4 +152,5 @@ export function BuildRoad(edge: Edge, player: Player, game: Game) {
   edge.structure = r;
   game.structures.push(r);
   player.structures.push(r);
+  return game;
 }
