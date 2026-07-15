@@ -384,6 +384,7 @@ export class Game {
       Ports: this.ports.map(p => p.toJSON()),
       Structures: this.structures.map(s => s.toJSON()),
       DevCards: this.devCards,
+      GameState: this.gameState,
     }
   }
   seed() {
@@ -480,6 +481,7 @@ export function buildFromJSON(game: any): Game {
     tile.value = t.value;
     tile.xPos = t.xPos;
     tile.yPos = t.yPos;
+    tile.highlighted = t.highlighted;
     tile.vertices = t.vertexIds.map((id: number) => verticeMap.get(id));
     tile.edges = t.edgeIds.map((id: number) => edgeMap.get(id));
   }
@@ -493,12 +495,14 @@ export function buildFromJSON(game: any): Game {
       vertice.port = undefined;
     }
     vertice.tiles = v.tileIds.map((id: number) => tileMap.get(id));
+    vertice.highlighted = v.highlighted;
     vertice.structure = structureMap.get(v.structureId);
     vertice.edges = v.edgeIds.map((id: number) => edgeMap.get(id));
   }
   for (const e of edges) {
     const edge = edgeMap.get(e.id)!;
     edge.structure = e.structure;
+    edge.highlighted = e.highlighted;
     edge.tiles = e.tileIds.map((id: number) => tileMap.get(id));
     edge.vertices = e.vertexIds.map((id: number) => verticeMap.get(id));
   }
