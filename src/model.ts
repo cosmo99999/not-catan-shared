@@ -282,7 +282,9 @@ export interface Game {
   currentTurnPlayer?: Player;
   gameState: GameState;
 }
-
+export function getEmptyGame(): Game {
+  return { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll };
+}
 function buildBoard(game: Game): Game {
   const tiles: Tile[] = [];
   const vertexLookup = new Map<string, Vertice>();
@@ -464,7 +466,7 @@ function seed(game: Game): Game {
 
 export function buildFromJSON(game: any): Game {
 
-  let g: Game = { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll };
+  let g = getEmptyGame();
   const tiles = game.Tiles;
   const vertices = game.Vertices;
   const edges = game.Edges;
