@@ -118,7 +118,7 @@ export function makePurchase(type: Purchase, p: Player): Player {
   return player;
 
 }
-export function BuildCity(vertex: Vertice, player: Player, g: Game): [Game, player] {
+export function BuildCity(vertex: Vertice, player: Player, g: Game): [Game, Player] {
   const game = structuredClone(g);
   const c = new Structure(
     player.colour,
