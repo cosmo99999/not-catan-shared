@@ -55,6 +55,9 @@ export function getRandomInt(min: number, max: number): number {
 }
 export enum GameState {
   PreRoll,
+  Discard,
+  RobberPlacing,
+  Stealing,
   Turn,
 }
 export enum Resource {
