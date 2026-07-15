@@ -118,8 +118,9 @@ export function makePurchase(type: Purchase, p: Player): Player {
   return player;
 
 }
-export function BuildCity(vertex: Vertice, player: Player, g: Game): [Game, Player] {
+export function BuildCity(vertex: Vertice, p: Player, g: Game): [Game, Player] {
   const game = structuredClone(g);
+  const player = structuredClone(p);
   const c = new Structure(
     player.colour,
     StructureType.Settlement,
@@ -134,8 +135,8 @@ export function BuildCity(vertex: Vertice, player: Player, g: Game): [Game, Play
   player.structures.push(c);
   return [game, player];
 }
-export function BuildSettlement(vertex: Vertice, player: Player, g: Game): [Game, Player] {
-
+export function BuildSettlement(vertex: Vertice, p: Player, g: Game): [Game, Player] {
+  const player = structuredClone(p);
   const game = structuredClone(g);
   const s = new Structure(
     player.colour,
@@ -147,7 +148,8 @@ export function BuildSettlement(vertex: Vertice, player: Player, g: Game): [Game
   player.structures.push(s);
   return [game, player];
 }
-export function BuildRoad(edge: Edge, player: Player, g: Game): [Game, Player] {
+export function BuildRoad(edge: Edge, p: Player, g: Game): [Game, Player] {
+  const player = structuredClone(p);
   const game = structuredClone(g);
   const r = new Structure(
     player.colour,
