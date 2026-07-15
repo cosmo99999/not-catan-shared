@@ -158,7 +158,7 @@ export function BuildCity(vertex: Vertice, p: Player, g: Game): [Game, Player] {
   game.structures = game.structures.filter(s => s.id != currentStructureId);
   player.structures = player.structures.filter(s => s.id != currentStructureId);
 
-  const modifiedVert = game.vertices.find((v) => v.id = vertex.id);
+  const modifiedVert = game.vertices.find((v) => v.id == vertex.id);
   modifiedVert!.structure = c;
   game.structures.push(c);
   player.structures.push(c);
@@ -172,7 +172,7 @@ export function BuildSettlement(vertex: Vertice, p: Player, g: Game): [Game, Pla
     StructureType.Settlement,
     player);
 
-  const modifiedVert = game.vertices.find((v) => v.id = vertex.id);
+  const modifiedVert = game.vertices.find((v) => v.id == vertex.id);
   modifiedVert!.structure = s;
   game.structures.push(s);
   player.structures.push(s);
@@ -186,7 +186,7 @@ export function BuildRoad(edge: Edge, p: Player, g: Game): [Game, Player] {
     StructureType.Road,
     player);
 
-  const modifiedEdge = game.edges.find((v) => v.id = edge.id);
+  const modifiedEdge = game.edges.find((v) => v.id == edge.id);
   modifiedEdge!.structure = r;
   game.structures.push(r);
   player.structures.push(r);
