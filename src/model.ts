@@ -387,7 +387,7 @@ export function gametoJSON(game: Game): any {
     Structures: game.structures.map(s => s.toJSON()),
     devCards: game.devCards,
     gameState: game.gameState,
-    currentTurnPlayer: game.currentTurnPlayer
+    currentTurnPlayerId: game.currentTurnPlayerId
   }
 }
 export function seed(game: Game): Game {
@@ -432,7 +432,7 @@ export function seed(game: Game): Game {
   game.players.push(p2);
   game.players.push(p3);
   game.players.push(p4);
-  game.currentTurnPlayer = p1;
+  game.currentTurnPlayerId = p1.id;
   return game;
 }
 
