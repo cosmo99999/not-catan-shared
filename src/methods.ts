@@ -151,14 +151,15 @@ export function BuildCity(vertex: Vertice, p: Player, g: Game): [Game, Player] {
   const player = structuredClone(p);
   const c = new Structure(
     player.colour,
-    StructureType.Settlement,
+    StructureType.City,
     player);
 
   const currentStructureId = vertex.structure!.id;
-  game.structures = game.structures.filter(s => s.id == currentStructureId);
-  player.structures = player.structures.filter(s => s.id == currentStructureId);
+  game.structures = game.structures.filter(s => s.id != currentStructureId);
+  player.structures = player.structures.filter(s => s.id != currentStructureId);
 
-  vertex.structure = c;
+  const modifiedVert = game.vertices.find((v) => v.id = vertex.id);
+  modifiedVert!.structure = c;
   game.structures.push(c);
   player.structures.push(c);
   return [game, player];
@@ -171,7 +172,8 @@ export function BuildSettlement(vertex: Vertice, p: Player, g: Game): [Game, Pla
     StructureType.Settlement,
     player);
 
-  vertex.structure = s;
+  const modifiedVert = game.vertices.find((v) => v.id = vertex.id);
+  modifiedVert!.structure = s;
   game.structures.push(s);
   player.structures.push(s);
   return [game, player];
@@ -184,7 +186,8 @@ export function BuildRoad(edge: Edge, p: Player, g: Game): [Game, Player] {
     StructureType.Road,
     player);
 
-  edge.structure = r;
+  const modifiedEdge = game.edges.find((v) => v.id = edge.id);
+  modifiedEdge!.structure = r;
   game.structures.push(r);
   player.structures.push(r);
   return [game, player];
