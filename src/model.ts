@@ -148,6 +148,14 @@ export class Edge {
     this.vertices = [v1, v2];
     this.id = id;
   }
+  adjacentToStructure(player: Player): boolean {
+    this.vertices.forEach((v) => {
+      if (v.structure && v.structure.player == player) {
+        return true;
+      }
+    })
+    return false;
+  }
   toJSON() {
     return {
       id: this.id,

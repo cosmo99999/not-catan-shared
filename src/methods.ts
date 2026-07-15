@@ -24,7 +24,16 @@ export function ValidSettlementPositions(game: Game, player: Player): number[] {
   } else {
     return potential.filter(v => v.hasJoiningRoad(player)).map(v => v.id);
   }
-
+}
+export function ValidCityPosition(game: Game, player: Player): number[] {
+  const allVerts = [...game.vertices];
+  return allVerts.filter(
+    v => (!v.neighbourHasStructure() && v.structure?.type == StructureType.Settlement && v.structure.player == player))
+    .map(vx => vx.id);
+}
+export function ValidRoadPosition(game: Game, player: Player): number[] {
+  const allEdges = [...game.edges];
+  return allEdges.filter(e => e.adjacentToStructure(player)).map(e => e.id);
 }
 export function HandleDiceRoll(roll: number, game: Game): Game {
   const g = structuredClone(game);
