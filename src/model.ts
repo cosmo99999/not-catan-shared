@@ -251,7 +251,7 @@ export interface Game {
   ports: Port[];
   structures: Structure[];
   devCards: DevCard[];
-  currentTurnPlayer?: Player;
+  currentTurnPlayerId?: number;
   gameState: GameState;
 }
 export function getEmptyGame(): Game {
@@ -446,7 +446,7 @@ export function buildFromJSON(game: any): Game {
   const structures = game.Structures;
   const devCards = game.devCards;
   const players = game.Players;
-  g.currentTurnPlayer = game.currentTurnPlayer;
+  g.currentTurnPlayerId = game.currentTurnPlayerId;
 
   const tileMap = new Map<number, Tile>();
   const verticeMap = new Map<number, Vertice>();
