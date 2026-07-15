@@ -285,7 +285,7 @@ export interface Game {
 export function getEmptyGame(): Game {
   return { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll };
 }
-function buildBoard(game: Game): Game {
+export function buildBoard(game: Game): Game {
   const tiles: Tile[] = [];
   const vertexLookup = new Map<string, Vertice>();
   const edgeLookup = new Map<string, Edge>();
@@ -350,7 +350,7 @@ function buildBoard(game: Game): Game {
   return game;
 
 }
-function randomizeBoard(game: Game): Game {
+export function randomizeBoard(game: Game): Game {
   const numbers: number[] = [...possiblenumbers];
   const resources: number[] = [...possilberesources];
   const tileOffset = getRandomInt(0, 10);
@@ -405,7 +405,7 @@ function randomizeBoard(game: Game): Game {
   }
   return game;
 }
-function gametoJSON(game: Game): any {
+export function gametoJSON(game: Game): any {
   return {
     Tiles: game.tiles.map(t => t.toJSON()),
     Vertices: game.vertices.map(v => v.toJSON()),
@@ -418,7 +418,7 @@ function gametoJSON(game: Game): any {
     currentTurnPlayer: game.currentTurnPlayer
   }
 }
-function seed(game: Game): Game {
+export function seed(game: Game): Game {
   let sCounter = 0;
   // for (let i = 0; i < 10; i++) {
   //   let pos = getRandomInt(0, this.edges.length);
