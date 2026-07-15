@@ -20,7 +20,6 @@ function hexCorner(q: number, r: number, i: number) {
     y: cy! + size * Math.sin(angleRad),
   };
 }
-
 export function axialToPixel(q: number, r: number) {
   return {
     x: size * Math.sqrt(3) * (q + r / 2),
@@ -30,7 +29,6 @@ export function axialToPixel(q: number, r: number) {
 function tileKey(q: number, r: number): string {
   return `${q},${r}`;
 }
-
 function vertKey(q: number, r: number, k: number): string {
   const [qO1, r01] = offsets[k]!;
   const [qO2, r02] = offsets[(k + 1) % 6]!;
@@ -41,7 +39,6 @@ function vertKey(q: number, r: number, k: number): string {
   ]
   return neighbours.sort().join("|");
 }
-
 function edgeKey(q: number, r: number, k: number): string {
   const [qO1, r01] = offsets[k]!;
   const neighbours = [
@@ -55,6 +52,10 @@ export function getRandomInt(min: number, max: number): number {
   const maxFloored = Math.floor(max);
   // The maximum is exclusive and the minimum is inclusive
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
+}
+export enum GameState {
+  PreRoll,
+  Turn,
 }
 export enum Resource {
   Brick,
@@ -241,6 +242,7 @@ export class Game {
   structures: Structure[] = [];
   devCards: DevCard[] = [];
   currentTurnPlayer?: Player;
+  gameState: GameState = GameState.PreRoll;
 
   constructor() {
     this.buildBoard();
