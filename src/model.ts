@@ -516,6 +516,7 @@ export function buildFromJSON(game: any): Game {
     pl.structures = p.structureIds.map((id: number) => structureMap.get(id));
     pl.resources = p.resources;
     pl.name = p.name;
+    g.players.push(pl);
   }
   for (const t of tiles) {
     const tile = tileMap.get(t.id)!;
