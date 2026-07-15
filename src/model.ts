@@ -440,6 +440,7 @@ export function buildFromJSON(game: any): Game {
   const structures = game.Structures;
   const devCards = game.devCards;
 
+  g.currentTurnPlayer = game.currentTurnPlayer;
   g.players = game.Players;
 
   const tileMap = new Map<number, Tile>();
