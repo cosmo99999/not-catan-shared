@@ -434,17 +434,17 @@ export function seed(game: Game): Game {
   //   this.vertices[pos]!.structure = s;
   //   this.structures.push(s);
   // }
-  // for (let i = 0; i < 5; i++) {
-  //   let pos = getRandomInt(0, this.vertices.length);
-  //   let c = getRandomInt(0, 4);
-  //   let s = new Structure(sCounter++, c, StructureType.Settlement);
-  //   this.vertices[pos]!.structure = s;
-  //   this.structures.push(s);
-  // }
   const p1 = new Player(0, Colour.Blue);
   const p2 = new Player(1, Colour.White);
   const p3 = new Player(2, Colour.Orange);
   const p4 = new Player(3, Colour.Red);
+  for (let i = 0; i < 5; i++) {
+    let pos = getRandomInt(0, game.vertices.length);
+    let c = getRandomInt(0, 4);
+    let s = new Structure(c, StructureType.Settlement, p1);
+    game.vertices[pos]!.structure = s;
+    game.structures.push(s);
+  }
   p1.name = "rory";
   p2.name = "alec";
   p3.name = "milo";
