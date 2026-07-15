@@ -420,6 +420,9 @@ export class Game {
     p3.name = "milo";
     p4.name = "ham";
     p1.resources.push(Resource.Brick);
+    p1.resources.push(Resource.Sheep);
+    p1.resources.push(Resource.Wood);
+    p1.resources.push(Resource.Wheat);
     p2.resources.push(Resource.Sheep);
     p2.resources.push(Resource.Sheep);
     p2.resources.push(Resource.Ore);
