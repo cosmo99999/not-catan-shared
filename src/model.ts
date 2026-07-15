@@ -473,9 +473,8 @@ export function buildFromJSON(game: any): Game {
   const ports = game.Ports;
   const structures = game.Structures;
   const devCards = game.devCards;
-
+  const players = game.players;
   g.currentTurnPlayer = game.currentTurnPlayer;
-  g.players = game.Players;
 
   const tileMap = new Map<number, Tile>();
   const verticeMap = new Map<number, Vertice>();
@@ -511,6 +510,13 @@ export function buildFromJSON(game: any): Game {
     edgeMap.set(e.id, e);
   }
 
+  for (const p of players) {
+    const pl = new Player(p.id, p.colour);
+    pl.devCards = p.devCards;
+    pl.structures = p.structureIds.map((id: number) => structureMap.get(id));
+    pl.resources = p.resources;
+    pl.name = p.name;
+  }
   for (const t of tiles) {
     const tile = tileMap.get(t.id)!;
     tile.resource = t.resource;
