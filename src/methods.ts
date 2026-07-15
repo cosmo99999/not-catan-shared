@@ -15,8 +15,9 @@ export function rollDice(): [number, number] {
   return [d1, d2];
 
 }
-export function HandleDiceRoll(roll: number, game: Game) {
-  game.tiles.forEach((t) => {
+export function HandleDiceRoll(roll: number, game: Game): Game {
+  const g = structuredClone(game);
+  g.tiles.forEach((t) => {
     if (t.value == roll && !t.robber) {
       t.vertices.forEach((v) => {
         if (v.structure) {
@@ -31,6 +32,7 @@ export function HandleDiceRoll(roll: number, game: Game) {
       })
     }
   })
+  return g;
 }
 export function canAfford(type: Purchase, resources: Resource[]): boolean {
   switch (type) {
