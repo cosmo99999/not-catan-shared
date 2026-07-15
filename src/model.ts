@@ -50,7 +50,7 @@ function edgeKey(q: number, r: number, k: number): string {
   ]
   return neighbours.sort().join("|");
 }
-function getRandomInt(min: number, max: number): number {
+export function getRandomInt(min: number, max: number): number {
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
   // The maximum is exclusive and the minimum is inclusive
@@ -68,6 +68,12 @@ export enum StructureType {
   Settlement,
   City,
   Road
+}
+export enum Purchase {
+  Road,
+  Settlement,
+  City,
+  DevCard
 }
 export enum Colour {
   Blue,
@@ -91,19 +97,23 @@ export class DevCard {
   }
 }
 export class Structure {
+  static counter = 0;
   id: number;
   type: StructureType;
   colour: Colour;
-  constructor(id: number, c: Colour, type: StructureType) {
-    this.id = id;
+  player: Player;
+  constructor(c: Colour, type: StructureType, player: Player) {
+    this.id = Structure.counter++;
     this.type = type;
     this.colour = c;
+    this.player = player;
   }
   toJSON() {
     return {
       id: this.id,
       type: this.type,
       colour: this.colour,
+      playerId: this.player.id,
     }
   }
 }
@@ -308,6 +318,7 @@ export class Game {
       if (numbers.length == 0) {
         t.resource = Resource.None;
         t.value = -1;
+        t.robber = true;
       } else {
         let nIndex = getRandomInt(0, numbers.length);
         let rIndex = getRandomInt(0, resources.length);
@@ -406,13 +417,16 @@ export class Game {
   }
 }
 export function buildFromJSON(game: any): Game {
+
+  const g = new Game();
   const tiles = game.Tiles;
   const vertices = game.Vertices;
   const edges = game.Edges;
-  const players = game.Players;
   const ports = game.Ports;
   const structures = game.Structures;
   const devCards = game.devCards;
+
+  g.players = game.Players;
 
   const tileMap = new Map<number, Tile>();
   const verticeMap = new Map<number, Vertice>();
@@ -427,7 +441,8 @@ export function buildFromJSON(game: any): Game {
   }
   for (let i = 0; i < structures.length; i++) {
     const data = structures[i];
-    const t = new Structure(data.id, data.colour, data.type);
+    const player = g.players.find(p => p.id == data.playerId)!;
+    const t = new Structure(data.colour, data.type, player);
     structureMap.set(t.id, t);
   }
   for (let i = 0; i < ports.length; i++) {
@@ -475,14 +490,12 @@ export function buildFromJSON(game: any): Game {
     edge.tiles = e.tileIds.map((id: number) => tileMap.get(id));
     edge.vertices = e.vertexIds.map((id: number) => verticeMap.get(id));
   }
-  const g = new Game();
 
   g.tiles = [...tileMap.values()];
   g.vertices = [...verticeMap.values()];
   g.edges = [...edgeMap.values()];
   g.ports = ports;
   g.structures = structures;
-  g.players = players;
   g.devCards = devCards;
   return g;
 
