@@ -18,7 +18,7 @@ export function rollDice(): [number, number] {
 export function ValidSettlementPositions(game: Game, player: Player): number[] {
   const allVerts = [...game.vertices];
   const potential = allVerts.filter(v => !v.neighbourHasStructure());
-  const settlements = player.structures.filter(s => s.type == StructureType.Settlement).length;
+  const settlements = player.structures?.filter(s => s.type == StructureType.Settlement).length;
   if (settlements < 2) {
     return potential.map(v => v.id);
   } else {
