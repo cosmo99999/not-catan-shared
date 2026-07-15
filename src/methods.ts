@@ -92,7 +92,8 @@ export function canAfford(type: Purchase, resources: Resource[]): boolean {
   }
   return false;
 }
-export function makePurchase(type: Purchase, player: Player): Player {
+export function makePurchase(type: Purchase, p: Player): Player {
+  const player = structuredClone(p);
   switch (type) {
     case Purchase.City: {
       removeResource(Resource.Wheat, 2, player);
