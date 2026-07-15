@@ -426,6 +426,7 @@ export class Game {
     this.players.push(p2);
     this.players.push(p3);
     this.players.push(p4);
+    this.currentTurnPlayer = p1;
 
   }
 }
