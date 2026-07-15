@@ -1,4 +1,4 @@
-import * as methods from "./methods";
+export * from "./methods.js";
 const offsets: [number, number][] = [[0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0]];
 const tilePositon: [number, number][] = [
   [0, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0], [0, -2], [1, -2],
