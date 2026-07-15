@@ -143,6 +143,7 @@ export class Edge {
   vertices: [Vertice, Vertice];
   tiles: Tile[] = [];
   structure?: Structure;
+  highlighted: boolean = false;
   constructor(id: number, v1: Vertice, v2: Vertice) {
     this.vertices = [v1, v2];
     this.id = id;
@@ -153,6 +154,7 @@ export class Edge {
       structure: this.structure,
       vertexIds: this.vertices.map(v => v.id),
       tileIds: this.tiles.map(e => e.id),
+      highlighted: this.highlighted,
     }
   }
 }
@@ -167,6 +169,7 @@ export class Tile {
   robber: boolean = false;
   xPos: number = -1;
   yPos: number = -1;
+  highlighted: boolean = false;
   constructor(id: number, q: number, r: number) {
     this.id = id;
     this.q = q;
@@ -185,6 +188,7 @@ export class Tile {
       robber: this.robber,
       xPos: this.xPos,
       yPos: this.yPos,
+      highlighted: this.highlighted,
     }
   }
 }
@@ -196,6 +200,7 @@ export class Vertice {
   structure?: Structure;
   xPos: number = -1;
   yPos: number = -1;
+  highlighted: boolean = false;
   constructor(id: number) {
     this.id = id;
   }
@@ -208,6 +213,7 @@ export class Vertice {
       portId: this.port?.id,
       xPos: this.xPos,
       yPos: this.yPos,
+      highlighted: this.highlighted,
     }
   }
 }
