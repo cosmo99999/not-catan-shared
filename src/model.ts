@@ -204,6 +204,26 @@ export class Vertice {
   constructor(id: number) {
     this.id = id;
   }
+  neighbourHasStructure(): boolean {
+    this.edges.forEach((e) => {
+      e.vertices.forEach((v) => {
+        if (v.structure && v.id !== this.id) {
+          return true;
+        }
+      })
+    })
+    return false;
+  }
+  hasJoiningRoad(player: Player): boolean {
+    this.edges.forEach((e) => {
+      if (e.structure) {
+        if (e.structure.player == player) {
+          return true;
+        }
+      }
+    })
+    return false;
+  }
   toJSON() {
     return {
       id: this.id,

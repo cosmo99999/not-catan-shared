@@ -15,6 +15,17 @@ export function rollDice(): [number, number] {
   return [d1, d2];
 
 }
+export function ValidSettlementPositions(game: Game, player: Player): number[] {
+  const allVerts = [...game.vertices];
+  const potential = allVerts.filter(v => !v.neighbourHasStructure());
+  const settlements = player.structures.filter(s => s.type == StructureType.Settlement).length;
+  if (settlements < 2) {
+    return potential.map(v => v.id);
+  } else {
+    return potential.filter(v => v.hasJoiningRoad(player)).map(v => v.id);
+  }
+
+}
 export function HandleDiceRoll(roll: number, game: Game): Game {
   const g = structuredClone(game);
   g.tiles.forEach((t) => {
