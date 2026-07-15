@@ -270,201 +270,201 @@ export class Player {
     }
   }
 }
-export class Game {
-  tiles: Tile[] = [];
-  vertices: Vertice[] = [];
-  edges: Edge[] = [];
-  players: Player[] = [];
-  ports: Port[] = [];
-  structures: Structure[] = [];
-  devCards: DevCard[] = [];
+export interface Game {
+
+  tiles: Tile[];
+  vertices: Vertice[];
+  edges: Edge[];
+  players: Player[];
+  ports: Port[];
+  structures: Structure[];
+  devCards: DevCard[];
   currentTurnPlayer?: Player;
-  gameState: GameState = GameState.PreRoll;
+  gameState: GameState;
+}
 
-  constructor() {
-    this.buildBoard();
-  }
+function buildBoard(game: Game): Game {
+  const tiles: Tile[] = [];
+  const vertexLookup = new Map<string, Vertice>();
+  const edgeLookup = new Map<string, Edge>();
+  let nextEId = 0;
+  let nextVId = 0;
 
-  buildBoard() {
-    const tiles: Tile[] = [];
-    const vertexLookup = new Map<string, Vertice>();
-    const edgeLookup = new Map<string, Edge>();
-    let nextEId = 0;
-    let nextVId = 0;
+  tilePositon.forEach(([q, r], i) => {
+    const tile = new Tile(i, q, r);
+    const { x: xp, y: yp } = axialToPixel(q, r)!;
+    tile.xPos = xp;
+    tile.yPos = yp;
+    const cornerVerts: Vertice[] = [];
 
-    tilePositon.forEach(([q, r], i) => {
-      const tile = new Tile(i, q, r);
-      const { x: xp, y: yp } = axialToPixel(q, r)!;
-      tile.xPos = xp;
-      tile.yPos = yp;
-      const cornerVerts: Vertice[] = [];
-
-      for (let k = 0; k < 6; k++) {
-        const key = vertKey(q, r, k)
-        let v = vertexLookup.get(key);
-        if (!v) {
-          v = new Vertice(nextVId++);
-          const { x: vxp, y: vyp } = hexCorner(q, r, (k + 5) % 6);
-          v.xPos = vxp;
-          v.yPos = vyp;
-          vertexLookup.set(key, v);
-        }
-        v.tiles.push(tile);
-        tile.vertices.push(v);
-        cornerVerts.push(v);
+    for (let k = 0; k < 6; k++) {
+      const key = vertKey(q, r, k)
+      let v = vertexLookup.get(key);
+      if (!v) {
+        v = new Vertice(nextVId++);
+        const { x: vxp, y: vyp } = hexCorner(q, r, (k + 5) % 6);
+        v.xPos = vxp;
+        v.yPos = vyp;
+        vertexLookup.set(key, v);
       }
-      for (let k = 0; k < 6; k++) {
-        const key = edgeKey(q, r, k)
-        let e = edgeLookup.get(key);
-        if (!e) {
-          let v1 = (k + 5) % 6;
-          let v2 = k;
-          e = new Edge(nextEId++, cornerVerts[v1]!, cornerVerts[k]!);
-          edgeLookup.set(key, e);
-          e.vertices[0].edges.push(e);
-          e.vertices[1].edges.push(e);
-        }
-        e.tiles.push(tile);
-        tile.edges.push(e);
-      }
-      tiles.push(tile);
-    });
-
-    let devCardCounter = 0;
-    for (let i = 0; i < 25; i++) {
-      if (i < 14) {
-        this.devCards.push(new DevCard(devCardCounter++, DevCardType.Knight));
-      } else if (i < 19) {
-        this.devCards.push(new DevCard(devCardCounter++, DevCardType.VP));
-      } else if (i < 21) {
-        this.devCards.push(new DevCard(devCardCounter++, DevCardType.RoadBuilding));
-      } else if (i < 23) {
-        this.devCards.push(new DevCard(devCardCounter++, DevCardType.Monopoly));
-      } else {
-        this.devCards.push(new DevCard(devCardCounter++, DevCardType.YearOfPlenty));
-      }
+      v.tiles.push(tile);
+      tile.vertices.push(v);
+      cornerVerts.push(v);
     }
-    this.tiles = tiles;
-    this.edges = [...edgeLookup.values()];
-    this.vertices = [...vertexLookup.values()];
-
-  }
-  randomizeBoard() {
-    const numbers: number[] = [...possiblenumbers];
-    const resources: number[] = [...possilberesources];
-    const tileOffset = getRandomInt(0, 10);
-    for (let i = 0; i < this.tiles.length; i++) {
-      const t = this.tiles[(i + tileOffset) % (this.tiles.length)]!;
-      if (numbers.length == 0) {
-        t.resource = Resource.None;
-        t.value = -1;
-        t.robber = true;
-      } else {
-        let nIndex = getRandomInt(0, numbers.length);
-        let rIndex = getRandomInt(0, resources.length);
-
-        const n = numbers[nIndex];
-        const r = resources[rIndex];
-
-        t.resource = r!;
-        t.value = n!;
-
-        numbers.splice(nIndex, 1);
-        resources.splice(rIndex, 1);
+    for (let k = 0; k < 6; k++) {
+      const key = edgeKey(q, r, k)
+      let e = edgeLookup.get(key);
+      if (!e) {
+        let v1 = (k + 5) % 6;
+        let v2 = k;
+        e = new Edge(nextEId++, cornerVerts[v1]!, cornerVerts[k]!);
+        edgeLookup.set(key, e);
+        e.vertices[0].edges.push(e);
+        e.vertices[1].edges.push(e);
       }
-    };
-    let portIdCounter = 0;
-    const portsNumbers = [...portNums];
-    const verticeNums = [...portVertexOrderedIds];
-    const spacings = [...portSpacings];
-    const offset = getRandomInt(0, 10);
-    let counter = 0;
-    for (let i = 0; i < verticeNums.length;) {
-      if (portsNumbers.length == 0) break;
-      const v1 = this.vertices.find(v => v.id == verticeNums[(i + offset) % verticeNums.length])!;
-      const v2 = this.vertices.find(v => v.id == verticeNums[(i + offset + 1) % verticeNums.length])!;
-      const pIndex = getRandomInt(0, portsNumbers.length);
-      const resource = portsNumbers[pIndex]!;
-      portsNumbers.splice(pIndex, 1);
-      let value = -1;
-      if (resource !== 5) {
-        value = 2;
-      } else {
-        value = 3;
-      }
-      const p = new Port(portIdCounter++, value, resource);
-      v1.port = p;
-      v2.port = p;
-      this.ports.push(p);
+      e.tiles.push(tile);
+      tile.edges.push(e);
+    }
+    tiles.push(tile);
+  });
 
-      const sIndex = getRandomInt(0, spacings.length);
-      const s = spacings[sIndex]!;
-      i += s;
-      spacings.splice(sIndex, 1);
+  let devCardCounter = 0;
+  for (let i = 0; i < 25; i++) {
+    if (i < 14) {
+      game.devCards.push(new DevCard(devCardCounter++, DevCardType.Knight));
+    } else if (i < 19) {
+      game.devCards.push(new DevCard(devCardCounter++, DevCardType.VP));
+    } else if (i < 21) {
+      game.devCards.push(new DevCard(devCardCounter++, DevCardType.RoadBuilding));
+    } else if (i < 23) {
+      game.devCards.push(new DevCard(devCardCounter++, DevCardType.Monopoly));
+    } else {
+      game.devCards.push(new DevCard(devCardCounter++, DevCardType.YearOfPlenty));
     }
   }
-  toJSON() {
-    return {
-      Tiles: this.tiles.map(t => t.toJSON()),
-      Vertices: this.vertices.map(v => v.toJSON()),
-      Edges: this.edges.map(e => e.toJSON()),
-      Players: this.players.map(p => p.toJSON()),
-      Ports: this.ports.map(p => p.toJSON()),
-      Structures: this.structures.map(s => s.toJSON()),
-      devCards: this.devCards,
-      gameState: this.gameState,
-      currentTurnPlayer: this.currentTurnPlayer
-    }
-  }
-  seed() {
-    let sCounter = 0;
-    // for (let i = 0; i < 10; i++) {
-    //   let pos = getRandomInt(0, this.edges.length);
-    //   let c = getRandomInt(0, 4);
-    //   let s = new Structure(sCounter++, c, StructureType.Road);
-    //   this.edges[pos]!.structure = s;
-    //   this.structures.push(s);
-    // }
-    // for (let i = 0; i < 5; i++) {
-    //   let pos = getRandomInt(0, this.vertices.length);
-    //   let c = getRandomInt(0, 4);
-    //   let s = new Structure(sCounter++, c, StructureType.Settlement);
-    //   this.vertices[pos]!.structure = s;
-    //   this.structures.push(s);
-    // }
-    // for (let i = 0; i < 5; i++) {
-    //   let pos = getRandomInt(0, this.vertices.length);
-    //   let c = getRandomInt(0, 4);
-    //   let s = new Structure(sCounter++, c, StructureType.Settlement);
-    //   this.vertices[pos]!.structure = s;
-    //   this.structures.push(s);
-    // }
-    const p1 = new Player(0, Colour.Blue);
-    const p2 = new Player(1, Colour.White);
-    const p3 = new Player(2, Colour.Orange);
-    const p4 = new Player(3, Colour.Red);
-    p1.name = "rory";
-    p2.name = "alec";
-    p3.name = "milo";
-    p4.name = "ham";
-    p1.resources.push(Resource.Brick);
-    p1.resources.push(Resource.Sheep);
-    p1.resources.push(Resource.Wood);
-    p1.resources.push(Resource.Wheat);
-    p2.resources.push(Resource.Sheep);
-    p2.resources.push(Resource.Sheep);
-    p2.resources.push(Resource.Ore);
-    this.players.push(p1);
-    this.players.push(p2);
-    this.players.push(p3);
-    this.players.push(p4);
-    this.currentTurnPlayer = p1;
+  game.tiles = tiles;
+  game.edges = [...edgeLookup.values()];
+  game.vertices = [...vertexLookup.values()];
+  return game;
 
+}
+function randomizeBoard(game: Game): Game {
+  const numbers: number[] = [...possiblenumbers];
+  const resources: number[] = [...possilberesources];
+  const tileOffset = getRandomInt(0, 10);
+  for (let i = 0; i < game.tiles.length; i++) {
+    const t = game.tiles[(i + tileOffset) % (game.tiles.length)]!;
+    if (numbers.length == 0) {
+      t.resource = Resource.None;
+      t.value = -1;
+      t.robber = true;
+    } else {
+      let nIndex = getRandomInt(0, numbers.length);
+      let rIndex = getRandomInt(0, resources.length);
+
+      const n = numbers[nIndex];
+      const r = resources[rIndex];
+
+      t.resource = r!;
+      t.value = n!;
+
+      numbers.splice(nIndex, 1);
+      resources.splice(rIndex, 1);
+    }
+  };
+  let portIdCounter = 0;
+  const portsNumbers = [...portNums];
+  const verticeNums = [...portVertexOrderedIds];
+  const spacings = [...portSpacings];
+  const offset = getRandomInt(0, 10);
+  let counter = 0;
+  for (let i = 0; i < verticeNums.length;) {
+    if (portsNumbers.length == 0) break;
+    const v1 = game.vertices.find(v => v.id == verticeNums[(i + offset) % verticeNums.length])!;
+    const v2 = game.vertices.find(v => v.id == verticeNums[(i + offset + 1) % verticeNums.length])!;
+    const pIndex = getRandomInt(0, portsNumbers.length);
+    const resource = portsNumbers[pIndex]!;
+    portsNumbers.splice(pIndex, 1);
+    let value = -1;
+    if (resource !== 5) {
+      value = 2;
+    } else {
+      value = 3;
+    }
+    const p = new Port(portIdCounter++, value, resource);
+    v1.port = p;
+    v2.port = p;
+    game.ports.push(p);
+
+    const sIndex = getRandomInt(0, spacings.length);
+    const s = spacings[sIndex]!;
+    i += s;
+    spacings.splice(sIndex, 1);
+  }
+  return game;
+}
+function gametoJSON(game: Game): any {
+  return {
+    Tiles: game.tiles.map(t => t.toJSON()),
+    Vertices: game.vertices.map(v => v.toJSON()),
+    Edges: game.edges.map(e => e.toJSON()),
+    Players: game.players.map(p => p.toJSON()),
+    Ports: game.ports.map(p => p.toJSON()),
+    Structures: game.structures.map(s => s.toJSON()),
+    devCards: game.devCards,
+    gameState: game.gameState,
+    currentTurnPlayer: game.currentTurnPlayer
   }
 }
+function seed(game: Game): Game {
+  let sCounter = 0;
+  // for (let i = 0; i < 10; i++) {
+  //   let pos = getRandomInt(0, this.edges.length);
+  //   let c = getRandomInt(0, 4);
+  //   let s = new Structure(sCounter++, c, StructureType.Road);
+  //   this.edges[pos]!.structure = s;
+  //   this.structures.push(s);
+  // }
+  // for (let i = 0; i < 5; i++) {
+  //   let pos = getRandomInt(0, this.vertices.length);
+  //   let c = getRandomInt(0, 4);
+  //   let s = new Structure(sCounter++, c, StructureType.Settlement);
+  //   this.vertices[pos]!.structure = s;
+  //   this.structures.push(s);
+  // }
+  // for (let i = 0; i < 5; i++) {
+  //   let pos = getRandomInt(0, this.vertices.length);
+  //   let c = getRandomInt(0, 4);
+  //   let s = new Structure(sCounter++, c, StructureType.Settlement);
+  //   this.vertices[pos]!.structure = s;
+  //   this.structures.push(s);
+  // }
+  const p1 = new Player(0, Colour.Blue);
+  const p2 = new Player(1, Colour.White);
+  const p3 = new Player(2, Colour.Orange);
+  const p4 = new Player(3, Colour.Red);
+  p1.name = "rory";
+  p2.name = "alec";
+  p3.name = "milo";
+  p4.name = "ham";
+  p1.resources.push(Resource.Brick);
+  p1.resources.push(Resource.Sheep);
+  p1.resources.push(Resource.Wood);
+  p1.resources.push(Resource.Wheat);
+  p2.resources.push(Resource.Sheep);
+  p2.resources.push(Resource.Sheep);
+  p2.resources.push(Resource.Ore);
+  game.players.push(p1);
+  game.players.push(p2);
+  game.players.push(p3);
+  game.players.push(p4);
+  game.currentTurnPlayer = p1;
+  return game;
+}
+
 export function buildFromJSON(game: any): Game {
 
-  const g = new Game();
+  let g: Game = { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll };
   const tiles = game.Tiles;
   const vertices = game.Vertices;
   const edges = game.Edges;
