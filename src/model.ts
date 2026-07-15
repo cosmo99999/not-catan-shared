@@ -473,7 +473,7 @@ export function buildFromJSON(game: any): Game {
   const ports = game.Ports;
   const structures = game.Structures;
   const devCards = game.devCards;
-  const players = game.players;
+  const players = game.Players;
   g.currentTurnPlayer = game.currentTurnPlayer;
 
   const tileMap = new Map<number, Tile>();
