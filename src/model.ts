@@ -215,6 +215,8 @@ export function buildBoard(game: Game): Game {
         edgeLookup.set(key, e);
         const vOne = getVertice(e.verticeIds[0], game);
         const vTwo = getVertice(e.verticeIds[1], game);
+        e.verticeIds.push(vOne!.id);
+        e.verticeIds.push(vTwo!.id);
         vOne?.edgeIds.push(e.id);
         vTwo?.edgeIds.push(e.id);
       }
