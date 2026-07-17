@@ -209,16 +209,14 @@ export function buildBoard(game: Game): Game {
       const key = edgeKey(q, r, k)
       let e = edgeLookup.get(key);
       if (!e) {
-        let v1 = (k + 5) % 6;
-        let v2 = k;
+        let v1 = cornerVerts[(k + 5) % 6];
+        let v2 = cornerVerts[k];
         e = { id: nextEId++, verticeIds: [-1, -1], tileIds: [], highlighted: false };
         edgeLookup.set(key, e);
-        const vOne = getVertice(e.verticeIds[0], game);
-        const vTwo = getVertice(e.verticeIds[1], game);
-        e.verticeIds.push(vOne!.id);
-        e.verticeIds.push(vTwo!.id);
-        vOne?.edgeIds.push(e.id);
-        vTwo?.edgeIds.push(e.id);
+        e.verticeIds.push(v1!.id);
+        e.verticeIds.push(v2!.id);
+        v1?.edgeIds.push(e.id);
+        v2?.edgeIds.push(e.id);
       }
       e.tileIds.push(tile.id);
       tile.edgeIds.push(e.id);
