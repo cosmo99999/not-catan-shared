@@ -129,8 +129,8 @@ export function ValidRoadPosition(game: Game, player: Player): number[] {
   let allEdges = game.edges;
   const nearBuilding = allEdges.filter(e => isEdgeNearFriendlyStructure(e, game, player.id));
   const nearRoads = allEdges.filter(e => isEdgeNearFriendlyRoad(e, game, player.id));
-  allEdges = [...nearBuilding, ...nearRoads];
-  return allEdges.map(e => e.id);
+  let result = [...nearBuilding, ...nearRoads];
+  return result.map(e => e.id);
 }
 export function HandleDiceRoll(roll: number, g: Game): Game {
   const game = structuredClone(g);
