@@ -163,9 +163,9 @@ export function canAfford(type: Purchase, resources: Resource[]): boolean {
   }
   return false;
 }
-export function makePurchase(type: Purchase, p: Player, g: Game): Game {
+export function makePurchase(type: Purchase, pId: number, g: Game): Game {
   const game = structuredClone(g);
-  const player = game.players.find(pl => pl.id == p.id)!;
+  const player = game.players.find(pl => pl.id == pId)!;
   switch (type) {
     case Purchase.City: {
       removeResource(Resource.Wheat, 2, player);
@@ -189,9 +189,9 @@ export function makePurchase(type: Purchase, p: Player, g: Game): Game {
   }
   return game;
 }
-export function BuildCity(vertex: Vertice, p: Player, g: Game): Game {
+export function BuildCity(vertex: Vertice, pId: number, g: Game): Game {
   const game = structuredClone(g);
-  const player = getPlayer(p.id, game)!;
+  const player = getPlayer(pId, game)!;
   const c: Structure = {
     id: game.structureIdCounter++,
     colour: player.colour,
@@ -209,9 +209,9 @@ export function BuildCity(vertex: Vertice, p: Player, g: Game): Game {
   player.structureIds.push(c.id);
   return game;
 }
-export function BuildSettlement(vertex: Vertice, p: Player, g: Game): Game {
+export function BuildSettlement(vertex: Vertice, pId: number, g: Game): Game {
   const game = structuredClone(g);
-  const player = getPlayer(p.id, game)!;
+  const player = getPlayer(pId, game)!;
 
   const s: Structure = {
     id: game.structureIdCounter++,
@@ -226,9 +226,9 @@ export function BuildSettlement(vertex: Vertice, p: Player, g: Game): Game {
   player.structureIds.push(s.id);
   return game;
 }
-export function BuildRoad(edge: Edge, p: Player, g: Game): Game {
+export function BuildRoad(edge: Edge, pId: number, g: Game): Game {
   const game = structuredClone(g);
-  const player = getPlayer(p.id, game)!;
+  const player = getPlayer(pId, game)!;
 
   const r: Structure = {
     id: game.structureIdCounter++,
