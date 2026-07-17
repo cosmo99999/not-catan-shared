@@ -22,17 +22,11 @@ export function getAllStructuresByPlayer(id: number, game: Game) {
   return game.structures.filter((s: Structure) => (s.playerId == id))
 }
 function contains(array: number[], value: number) {
-  if (array.find(v => v == value)) return true;
+  if (array.some(v => v == value)) return true;
   return false;
 }
 function overlaps(array: number[], array2: number[]) {
-  array.forEach((a) => {
-    array2.forEach((b) => {
-      if (a == b)
-        return true;
-    })
-  })
-  return false;
+  return array.some(a => array2.includes(a));
 }
 function isEdgeNearStructure(edge: Edge, game: Game): boolean {
   let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
@@ -45,25 +39,27 @@ function isEdgeNearStructure(edge: Edge, game: Game): boolean {
 }
 function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boolean {
   let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
+  let result = false;
   vertices.forEach((v) => {
     const structure = getStructure(v.structureId, game);
     if (structure && structure.playerId == pId) {
-      return true;
+      result = true;
     }
   })
-  return false;
+  return result;
 }
 function VertexNeighbourHasStructure(vertex: Vertice, game: Game): boolean {
   let edges: number[] = game.edges.filter((e) => contains(e.verticeIds, vertex.id)).map(e => e.id);
   let vertices: Vertice[] = game.vertices.filter((v) => overlaps(v.edgeIds, edges));
+  let found = false;
   vertices.forEach((v) => {
-    if (v.structureId !== -1) return true;
+    if (v.structureId !== -1) found = true;
   })
-  return false;
+  return found;
 }
 function VertexHasJoiningRoad(vertex: Vertice, player: Player, game: Game): boolean {
   let edges: Edge[] = [];
-
+  let result = false;
   vertex.edgeIds.forEach((id) => {
     edges.push(getEdge(id, game)!)
   })
@@ -71,11 +67,11 @@ function VertexHasJoiningRoad(vertex: Vertice, player: Player, game: Game): bool
     if (e.structure) {
       const structure = getStructure(e.structure.id, game)
       if (structure?.playerId == player.id) {
-        return true;
+        result = true;
       }
     }
   })
-  return false;
+  return result;
 }
 function removeResource(resource: Resource, qty: number, player: Player) {
   const newResources = player.resources.filter(r => r !== resource);
