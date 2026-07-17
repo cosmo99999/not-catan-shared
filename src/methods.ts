@@ -1,16 +1,46 @@
 import { Edge, Game, getRandomInt, Player, Purchase, Resource, Structure, StructureType, Vertice } from "./model";
 
-function EdgeAdjacentToStructure(edge: Edge, player: Player): boolean {
-  edge.vertices.forEach((v) => {
-    if (v.structure && v.structure.player == player) {
+export function getVertice(id: number, game: Game) {
+  return game.vertices.find(v => v.id == id);
+}
+export function getEdge(id: number, game: Game) {
+  return game.edges.find(v => v.id == id);
+}
+export function getTile(id: number, game: Game) {
+  return game.tiles.find(v => v.id == id);
+}
+export function getStructure(id: number, game: Game) {
+  return game.structures.find(v => v.id == id);
+}
+export function getPlayer(id: number, game: Game) {
+  return game.players.find(v => v.id == id);
+}
+export function getAllStructuresByPlayer(id: number, game: Game) {
+  return game.structures.filter((s: Structure) => (s.playerId == id))
+}
+function isEdgeNearStructure(edge: Edge, game: Game): boolean {
+  let vertices: Vertice[] = [];
+  edge.verticeIds.forEach((id) => {
+    vertices.push(getVertice(id, game)!)
+  })
+  vertices.forEach((v) => {
+    if (v.structure) {
       return true;
     }
   })
   return false;
 }
-function VertexNeighbourHasStructure(vertex: Vertice): boolean {
-  vertex.edges.forEach((e) => {
-    e.vertices.forEach((v) => {
+function VertexNeighbourHasStructure(vertex: Vertice, game: Game): boolean {
+  let edges: Edge[] = [];
+  vertex.edgeIds.forEach((id) => {
+    edges.push(getEdge(id, game)!)
+  })
+  edges.forEach((e) => {
+    let vertices: Vertice[] = [];
+    e.verticeIds.forEach((id) => {
+      vertices.push(getVertice(id, game)!)
+    })
+    vertices.forEach((v) => {
       if (v.structure && v.id !== vertex.id) {
         return true;
       }
@@ -18,10 +48,16 @@ function VertexNeighbourHasStructure(vertex: Vertice): boolean {
   })
   return false;
 }
-function VertexHasJoiningRoad(vertex: Vertice, player: Player): boolean {
-  vertex.edges.forEach((e) => {
+function VertexHasJoiningRoad(vertex: Vertice, player: Player, game: Game): boolean {
+  let edges: Edge[] = [];
+
+  vertex.edgeIds.forEach((id) => {
+    edges.push(getEdge(id, game)!)
+  })
+  edges.forEach((e) => {
     if (e.structure) {
-      if (e.structure.player == player) {
+      const structure = getStructure(e.structure.id, game)
+      if (structure?.playerId == player.id) {
         return true;
       }
     }
@@ -45,36 +81,40 @@ export function rollDice(): [number, number] {
 }
 export function ValidSettlementPositions(game: Game, player: Player): number[] {
   const allVerts = [...game.vertices];
-  const potential = allVerts.filter(v => !VertexNeighbourHasStructure(v));
-  const settlements = player.structures?.filter(s => s.type == StructureType.Settlement).length;
+  const potential = allVerts.filter(v => !VertexNeighbourHasStructure(v, game));
+  const structures = getAllStructuresByPlayer(player.id, game);
+  const settlements = structures.filter(s => s.type == StructureType.Settlement).length;
   if (settlements < 2 || !settlements) {
     return potential.map(v => v.id);
   } else {
-    return potential.filter(v => VertexHasJoiningRoad(v, player)).map(v => v.id);
+    return potential.filter(v => VertexHasJoiningRoad(v, player, game)).map(v => v.id);
   }
 }
 export function ValidCityPosition(game: Game, player: Player): number[] {
   const allVerts = [...game.vertices];
   return allVerts.filter(
-    v => (!VertexNeighbourHasStructure(v) && v.structure?.type == StructureType.Settlement && v.structure.player == player))
+    v => (!VertexNeighbourHasStructure(v, game) && v.structure?.type == StructureType.Settlement && v.structure.playerId == player.id))
     .map(vx => vx.id);
 }
 export function ValidRoadPosition(game: Game, player: Player): number[] {
   const allEdges = [...game.edges];
-  return allEdges.filter(e => EdgeAdjacentToStructure(e, player)).map(e => e.id);
+  return allEdges.filter(e => isEdgeNearStructure(e, game)).map(e => e.id);
 }
 export function HandleDiceRoll(roll: number, game: Game): Game {
   const g = structuredClone(game);
   g.tiles.forEach((t) => {
     if (t.value == roll && !t.robber) {
-      t.vertices.forEach((v) => {
+      let vertices: Vertice[] = [];
+      t.verticeIds.forEach((id) => vertices.push(getVertice(id, game)!));
+      vertices.forEach((v) => {
         if (v.structure) {
+          const p = getPlayer(v.structure.playerId, game);
           if (v.structure.type == StructureType.Settlement) {
-            v.structure.player.resources.push(t.resource);
+            p?.resources.push(t.resource);
           }
           else if (v.structure.type == StructureType.City) {
-            v.structure.player.resources.push(t.resource);
-            v.structure.player.resources.push(t.resource);
+            p?.resources.push(t.resource);
+            p?.resources.push(t.resource);
           }
         }
       })
@@ -146,49 +186,57 @@ export function makePurchase(type: Purchase, p: Player): Player {
   return player;
 
 }
-export function BuildCity(vertex: Vertice, p: Player, g: Game): [Game, Player] {
+export function BuildCity(vertex: Vertice, p: Player, g: Game): Game {
   const game = structuredClone(g);
-  const player = structuredClone(p);
-  const c = new Structure(
-    player.colour,
-    StructureType.City,
-    player);
+  const player = getPlayer(p.id, game)!;
+  const c: Structure = {
+    id: game.structureIdCounter++,
+    colour: player.colour,
+    type: StructureType.City,
+    playerId: player.id,
+  }
 
   const currentStructureId = vertex.structure!.id;
   game.structures = game.structures.filter(s => s.id != currentStructureId);
-  player.structures = player.structures.filter(s => s.id != currentStructureId);
+  player.structureIds = player.structureIds.filter(s => s != currentStructureId);
 
   const modifiedVert = game.vertices.find((v) => v.id == vertex.id);
   modifiedVert!.structure = c;
   game.structures.push(c);
-  player.structures.push(c);
-  return [game, player];
+  player.structureIds.push(c.id);
+  return game;
 }
-export function BuildSettlement(vertex: Vertice, p: Player, g: Game): [Game, Player] {
-  const player = structuredClone(p);
+export function BuildSettlement(vertex: Vertice, p: Player, g: Game): Game {
   const game = structuredClone(g);
-  const s = new Structure(
-    player.colour,
-    StructureType.Settlement,
-    player);
+  const player = getPlayer(p.id, game)!;
+
+  const s: Structure = {
+    id: game.structureIdCounter++,
+    colour: player.colour,
+    type: StructureType.Settlement,
+    playerId: player.id,
+  }
 
   const modifiedVert = game.vertices.find((v) => v.id == vertex.id);
   modifiedVert!.structure = s;
   game.structures.push(s);
-  player.structures.push(s);
-  return [game, player];
+  player.structureIds.push(s.id);
+  return game;
 }
-export function BuildRoad(edge: Edge, p: Player, g: Game): [Game, Player] {
-  const player = structuredClone(p);
+export function BuildRoad(edge: Edge, p: Player, g: Game): Game {
   const game = structuredClone(g);
-  const r = new Structure(
-    player.colour,
-    StructureType.Road,
-    player);
+  const player = getPlayer(p.id, game)!;
+
+  const r: Structure = {
+    id: game.structureIdCounter++,
+    colour: player.colour,
+    type: StructureType.Settlement,
+    playerId: player.id,
+  }
 
   const modifiedEdge = game.edges.find((v) => v.id == edge.id);
   modifiedEdge!.structure = r;
   game.structures.push(r);
-  player.structures.push(r);
-  return [game, player];
+  player.structureIds.push(r.id);
+  return game;
 }

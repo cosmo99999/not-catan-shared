@@ -1,3 +1,5 @@
+import { getVertice } from "./methods.js";
+
 export * from "./methods.js";
 const offsets: [number, number][] = [[0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0]];
 const tilePositon: [number, number][] = [
@@ -92,158 +94,63 @@ export enum DevCardType {
   Monopoly,
   VP,
 }
-export class DevCard {
+export interface DevCard {
   id: number;
   type: DevCardType;
-  constructor(id: number, type: DevCardType) {
-    this.type = type;
-    this.id = id;
-  }
 }
-export class Structure {
-  static counter = 0;
+export interface Structure {
   id: number;
   type: StructureType;
   colour: Colour;
-  player: Player;
-  constructor(c: Colour, type: StructureType, player: Player) {
-    this.id = Structure.counter++;
-    this.type = type;
-    this.colour = c;
-    this.player = player;
-  }
-  toJSON() {
-    return {
-      id: this.id,
-      type: this.type,
-      colour: this.colour,
-      playerId: this.player.id,
-    }
-  }
+  playerId: number;
 }
-export class Port {
+export interface Port {
   id: number;
-  rate: number = -1;
-  resource: Resource = Resource.None;
-  constructor(id: number, rate: number, resource: Resource) {
-    this.id = id;
-    this.rate = rate;
-    this.resource = resource;
-  }
-  toJSON() {
-    return {
-      id: this.id,
-      rate: this.rate,
-      resource: this.resource,
-    }
-  }
+  rate: number;
+  resource: Resource;
 }
-export class Edge {
+export interface Edge {
   id: number;
-  vertices: [Vertice, Vertice];
-  tiles: Tile[] = [];
+  verticeIds: [number, number];
+  tileIds: number[];
   structure?: Structure;
-  highlighted: boolean = false;
-  constructor(id: number, v1: Vertice, v2: Vertice) {
-    this.vertices = [v1, v2];
-    this.id = id;
-  }
-  toJSON() {
-    return {
-      id: this.id,
-      structure: this.structure,
-      vertexIds: this.vertices.map(v => v.id),
-      tileIds: this.tiles.map(e => e.id),
-      highlighted: this.highlighted,
-    }
-  }
+  highlighted: boolean;
 }
-export class Tile {
+export interface Tile {
   id: number;
   r: number;
   q: number;
-  edges: Edge[] = [];
-  vertices: Vertice[] = [];
-  resource: Resource = Resource.None;
-  value: number = -1;
-  robber: boolean = false;
-  xPos: number = -1;
-  yPos: number = -1;
-  highlighted: boolean = false;
-  constructor(id: number, q: number, r: number) {
-    this.id = id;
-    this.q = q;
-    this.r = r;
-
-  }
-  toJSON() {
-    return {
-      id: this.id,
-      r: this.r,
-      q: this.q,
-      vertexIds: this.vertices.map(v => v.id),
-      edgeIds: this.edges.map(e => e.id),
-      resource: this.resource,
-      value: this.value,
-      robber: this.robber,
-      xPos: this.xPos,
-      yPos: this.yPos,
-      highlighted: this.highlighted,
-    }
-  }
+  edgeIds: number[];
+  verticeIds: number[];
+  resource: Resource;
+  value: number;
+  robber: boolean;
+  xPos: number;
+  yPos: number;
+  highlighted: boolean;
 }
-export class Vertice {
+export interface Vertice {
   id: number;
-  edges: Edge[] = [];
-  port?: Port;
-  tiles: Tile[] = [];
+  edgeIds: number[];
+  portId: number;
+  tileIds: number[];
   structure?: Structure;
-  xPos: number = -1;
-  yPos: number = -1;
-  highlighted: boolean = false;
-  constructor(id: number) {
-    this.id = id;
-  }
-  toJSON() {
-    return {
-      id: this.id,
-      edgeIds: this.edges.map(e => e.id),
-      tileIds: this.tiles.map(t => t.id),
-      structureId: this.structure?.id,
-      portId: this.port?.id,
-      xPos: this.xPos,
-      yPos: this.yPos,
-      highlighted: this.highlighted,
-    }
-  }
+  xPos: number;
+  yPos: number;
+  highlighted: boolean;
 }
-export class Player {
+export interface Player {
   id: number;
   name?: string;
-  victoryPoints: number = 0;
+  victoryPoints: number;
   colour: Colour;
-  structures: Structure[] = [];
-  resources: Resource[] = [];
-  devCards: DevCard[] = [];
-  playedDevCards: DevCard[] = [];
-  constructor(id: number, c: Colour) {
-    this.id = id;
-    this.colour = c;
-  }
-  toJSON() {
-    return {
-      id: this.id,
-      structureIds: this.structures.map(t => t.id),
-      colour: this.colour,
-      devCards: this.devCards,
-      playedDevCards: this.devCards,
-      resources: this.resources,
-      name: this.name,
-    }
-  }
+  structureIds: number[];
+  resources: Resource[];
+  devCards: DevCard[];
+  playedDevCards: DevCard[];
 }
 export interface Game {
-
+  structureIdCounter: number;
   tiles: Tile[];
   vertices: Vertice[];
   edges: Edge[];
@@ -255,7 +162,7 @@ export interface Game {
   gameState: GameState;
 }
 export function getEmptyGame(): Game {
-  return { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll };
+  return { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll, structureIdCounter: 0 };
 }
 export function buildBoard(game: Game): Game {
   const tiles: Tile[] = [];
@@ -265,7 +172,19 @@ export function buildBoard(game: Game): Game {
   let nextVId = 0;
 
   tilePositon.forEach(([q, r], i) => {
-    const tile = new Tile(i, q, r);
+    const tile: Tile = {
+      id: i,
+      q: q,
+      r: r,
+      edgeIds: [],
+      verticeIds: [],
+      resource: 0,
+      value: 0,
+      robber: false,
+      xPos: 0,
+      yPos: 0,
+      highlighted: false,
+    };
     const { x: xp, y: yp } = axialToPixel(q, r)!;
     tile.xPos = xp;
     tile.yPos = yp;
@@ -275,14 +194,14 @@ export function buildBoard(game: Game): Game {
       const key = vertKey(q, r, k)
       let v = vertexLookup.get(key);
       if (!v) {
-        v = new Vertice(nextVId++);
+        v = { id: nextVId++, edgeIds: [], tileIds: [], xPos: 0, yPos: 0, highlighted: false, portId: -1 };
         const { x: vxp, y: vyp } = hexCorner(q, r, (k + 5) % 6);
         v.xPos = vxp;
         v.yPos = vyp;
         vertexLookup.set(key, v);
       }
-      v.tiles.push(tile);
-      tile.vertices.push(v);
+      v.tileIds.push(tile.id);
+      tile.verticeIds.push(v.id);
       cornerVerts.push(v);
     }
     for (let k = 0; k < 6; k++) {
@@ -291,13 +210,15 @@ export function buildBoard(game: Game): Game {
       if (!e) {
         let v1 = (k + 5) % 6;
         let v2 = k;
-        e = new Edge(nextEId++, cornerVerts[v1]!, cornerVerts[k]!);
+        e = { id: nextEId, verticeIds: [-1, -1], tileIds: [], highlighted: false };
         edgeLookup.set(key, e);
-        e.vertices[0].edges.push(e);
-        e.vertices[1].edges.push(e);
+        const vOne = getVertice(e.verticeIds[0], game);
+        const vTwo = getVertice(e.verticeIds[1], game);
+        vOne?.edgeIds.push(e.id);
+        vTwo?.edgeIds.push(e.id);
       }
-      e.tiles.push(tile);
-      tile.edges.push(e);
+      e.tileIds.push(tile.id);
+      tile.edgeIds.push(e.id);
     }
     tiles.push(tile);
   });
@@ -305,15 +226,15 @@ export function buildBoard(game: Game): Game {
   let devCardCounter = 0;
   for (let i = 0; i < 25; i++) {
     if (i < 14) {
-      game.devCards.push(new DevCard(devCardCounter++, DevCardType.Knight));
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.Knight });
     } else if (i < 19) {
-      game.devCards.push(new DevCard(devCardCounter++, DevCardType.VP));
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.VP });
     } else if (i < 21) {
-      game.devCards.push(new DevCard(devCardCounter++, DevCardType.RoadBuilding));
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.RoadBuilding });
     } else if (i < 23) {
-      game.devCards.push(new DevCard(devCardCounter++, DevCardType.Monopoly));
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.Monopoly });
     } else {
-      game.devCards.push(new DevCard(devCardCounter++, DevCardType.YearOfPlenty));
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.YearOfPlenty });
     }
   }
   game.tiles = tiles;
@@ -365,9 +286,9 @@ export function randomizeBoard(game: Game): Game {
     } else {
       value = 3;
     }
-    const p = new Port(portIdCounter++, value, resource);
-    v1.port = p;
-    v2.port = p;
+    const p = { id: portIdCounter++, rate: value, resource: resource };
+    v1.portId = p.id;
+    v2.portId = p.id;
     game.ports.push(p);
 
     const sIndex = getRandomInt(0, spacings.length);
@@ -377,46 +298,13 @@ export function randomizeBoard(game: Game): Game {
   }
   return game;
 }
-export function gametoJSON(game: Game): any {
-  return {
-    Tiles: game.tiles.map(t => t.toJSON()),
-    Vertices: game.vertices.map(v => v.toJSON()),
-    Edges: game.edges.map(e => e.toJSON()),
-    Players: game.players.map(p => p.toJSON()),
-    Ports: game.ports.map(p => p.toJSON()),
-    Structures: game.structures.map(s => s.toJSON()),
-    devCards: game.devCards,
-    gameState: game.gameState,
-    currentTurnPlayerId: game.currentTurnPlayerId
-  }
-}
+
 export function seed(game: Game): Game {
-  let sCounter = 0;
-  // for (let i = 0; i < 10; i++) {
-  //   let pos = getRandomInt(0, this.edges.length);
-  //   let c = getRandomInt(0, 4);
-  //   let s = new Structure(sCounter++, c, StructureType.Road);
-  //   this.edges[pos]!.structure = s;
-  //   this.structures.push(s);
-  // }
-  // for (let i = 0; i < 5; i++) {
-  //   let pos = getRandomInt(0, this.vertices.length);
-  //   let c = getRandomInt(0, 4);
-  //   let s = new Structure(sCounter++, c, StructureType.Settlement);
-  //   this.vertices[pos]!.structure = s;
-  //   this.structures.push(s);
-  // }
-  const p1 = new Player(0, Colour.Blue);
-  const p2 = new Player(1, Colour.White);
-  const p3 = new Player(2, Colour.Orange);
-  const p4 = new Player(3, Colour.Red);
-  for (let i = 0; i < 5; i++) {
-    let pos = getRandomInt(0, game.vertices.length);
-    let c = getRandomInt(0, 4);
-    let s = new Structure(c, StructureType.Settlement, p1);
-    game.vertices[pos]!.structure = s;
-    game.structures.push(s);
-  }
+  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
+  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
+  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
+  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
+
   p1.name = "rory";
   p2.name = "alec";
   p3.name = "milo";
@@ -435,99 +323,111 @@ export function seed(game: Game): Game {
   game.currentTurnPlayerId = p1.id;
   return game;
 }
-
-export function buildFromJSON(game: any): Game {
-
-  let g = getEmptyGame();
-  const tiles = game.Tiles;
-  const vertices = game.Vertices;
-  const edges = game.Edges;
-  const ports = game.Ports;
-  const structures = game.Structures;
-  const devCards = game.devCards;
-  const players = game.Players;
-  g.currentTurnPlayerId = game.currentTurnPlayerId;
-
-  const tileMap = new Map<number, Tile>();
-  const verticeMap = new Map<number, Vertice>();
-  const edgeMap = new Map<number, Edge>();
-  const portMap = new Map<number, Port>();
-  const structureMap = new Map<number, Structure>();
-
-  for (let i = 0; i < tiles.length; i++) {
-    const data = tiles[i];
-    const t = new Tile(data.id, data.q, data.r);
-    tileMap.set(t.id, t);
-  }
-  for (let i = 0; i < structures.length; i++) {
-    const data = structures[i];
-    const player = g.players.find(p => p.id == data.playerId)!;
-    const t = new Structure(data.colour, data.type, player);
-    structureMap.set(t.id, t);
-  }
-  for (let i = 0; i < ports.length; i++) {
-    const data = ports[i];
-    const t = new Port(data.id, data.rate, data.resource);
-    portMap.set(t.id, t);
-  }
-  for (let i = 0; i < vertices.length; i++) {
-    const data = vertices[i];
-    const v = new Vertice(data.id);
-    verticeMap.set(v.id, v);
-  }
-  for (let i = 0; i < edges.length; i++) {
-    const data = edges[i];
-    const vIds = data.vertexIds;
-    const e = new Edge(data.id, verticeMap.get(vIds[0])!, verticeMap.get(vIds[1])!);
-    edgeMap.set(e.id, e);
-  }
-
-  for (const p of players) {
-    const pl = new Player(p.id, p.colour);
-    pl.devCards = p.devCards;
-    pl.structures = p.structureIds.map((id: number) => structureMap.get(id));
-    pl.resources = p.resources;
-    pl.name = p.name;
-    g.players.push(pl);
-  }
-  for (const t of tiles) {
-    const tile = tileMap.get(t.id)!;
-    tile.resource = t.resource;
-    tile.value = t.value;
-    tile.xPos = t.xPos;
-    tile.yPos = t.yPos;
-    tile.highlighted = t.highlighted;
-    tile.vertices = t.vertexIds.map((id: number) => verticeMap.get(id));
-    tile.edges = t.edgeIds.map((id: number) => edgeMap.get(id));
-  }
-  for (const v of vertices) {
-    const vertice = verticeMap.get(v.id)!;
-    vertice.xPos = v.xPos;
-    vertice.yPos = v.yPos;
-    if (v.portId !== undefined) {
-      vertice.port = portMap.get(v.portId);
-    } else {
-      vertice.port = undefined;
-    }
-    vertice.tiles = v.tileIds.map((id: number) => tileMap.get(id));
-    vertice.highlighted = v.highlighted;
-    vertice.structure = structureMap.get(v.structureId);
-    vertice.edges = v.edgeIds.map((id: number) => edgeMap.get(id));
-  }
-  for (const e of edges) {
-    const edge = edgeMap.get(e.id)!;
-    edge.structure = e.structure;
-    edge.highlighted = e.highlighted;
-    edge.tiles = e.tileIds.map((id: number) => tileMap.get(id));
-    edge.vertices = e.vertexIds.map((id: number) => verticeMap.get(id));
-  }
-
-  g.tiles = [...tileMap.values()];
-  g.vertices = [...verticeMap.values()];
-  g.edges = [...edgeMap.values()];
-  g.ports = ports;
-  g.structures = structures;
-  g.devCards = devCards;
-  return g;
-
-}
+// export function gametoJSON(game: Game): any {
+//   return {
+//     Tiles: game.tiles.map(t => t.toJSON()),
+//     Vertices: game.vertices.map(v => v.toJSON()),
+//     Edges: game.edges.map(e => e.toJSON()),
+//     Players: game.players.map(p => p.toJSON()),
+//     Ports: game.ports.map(p => p.toJSON()),
+//     Structures: game.structures.map(s => s.toJSON()),
+//     devCards: game.devCards,
+//     gameState: game.gameState,
+//     currentTurnPlayerId: game.currentTurnPlayerId
+//   }
+// }
+// export function buildFromJSON(game: any): Game {
+//
+//   let g = getEmptyGame();
+//   const tiles = game.Tiles;
+//   const vertices = game.Vertices;
+//   const edges = game.Edges;
+//   const ports = game.Ports;
+//   const structures = game.Structures;
+//   const devCards = game.devCards;
+//   const players = game.Players;
+//   g.currentTurnPlayerId = game.currentTurnPlayerId;
+//
+//   const tileMap = new Map<number, Tile>();
+//   const verticeMap = new Map<number, Vertice>();
+//   const edgeMap = new Map<number, Edge>();
+//   const portMap = new Map<number, Port>();
+//   const structureMap = new Map<number, Structure>();
+//
+//   for (let i = 0; i < tiles.length; i++) {
+//     const data = tiles[i];
+//     const t = new Tile(data.id, data.q, data.r);
+//     tileMap.set(t.id, t);
+//   }
+//   for (let i = 0; i < structures.length; i++) {
+//     const data = structures[i];
+//     const player = g.players.find(p => p.id == data.playerId)!;
+//     const t = new Structure(data.colour, data.type, player);
+//     structureMap.set(t.id, t);
+//   }
+//   for (let i = 0; i < ports.length; i++) {
+//     const data = ports[i];
+//     const t = new Port(data.id, data.rate, data.resource);
+//     portMap.set(t.id, t);
+//   }
+//   for (let i = 0; i < vertices.length; i++) {
+//     const data = vertices[i];
+//     const v = new Vertice(data.id);
+//     verticeMap.set(v.id, v);
+//   }
+//   for (let i = 0; i < edges.length; i++) {
+//     const data = edges[i];
+//     const vIds = data.vertexIds;
+//     const e = new Edge(data.id, verticeMap.get(vIds[0])!, verticeMap.get(vIds[1])!);
+//     edgeMap.set(e.id, e);
+//   }
+//
+//   for (const p of players) {
+//     const pl = new Player(p.id, p.colour);
+//     pl.devCards = p.devCards;
+//     pl.structures = p.structureIds.map((id: number) => structureMap.get(id));
+//     pl.resources = p.resources;
+//     pl.name = p.name;
+//     g.players.push(pl);
+//   }
+//   for (const t of tiles) {
+//     const tile = tileMap.get(t.id)!;
+//     tile.resource = t.resource;
+//     tile.value = t.value;
+//     tile.xPos = t.xPos;
+//     tile.yPos = t.yPos;
+//     tile.highlighted = t.highlighted;
+//     tile.vertices = t.vertexIds.map((id: number) => verticeMap.get(id));
+//     tile.edges = t.edgeIds.map((id: number) => edgeMap.get(id));
+//   }
+//   for (const v of vertices) {
+//     const vertice = verticeMap.get(v.id)!;
+//     vertice.xPos = v.xPos;
+//     vertice.yPos = v.yPos;
+//     if (v.portId !== undefined) {
+//       vertice.port = portMap.get(v.portId);
+//     } else {
+//       vertice.port = undefined;
+//     }
+//     vertice.tiles = v.tileIds.map((id: number) => tileMap.get(id));
+//     vertice.highlighted = v.highlighted;
+//     vertice.structure = structureMap.get(v.structureId);
+//     vertice.edges = v.edgeIds.map((id: number) => edgeMap.get(id));
+//   }
+//   for (const e of edges) {
+//     const edge = edgeMap.get(e.id)!;
+//     edge.structure = e.structure;
+//     edge.highlighted = e.highlighted;
+//     edge.tiles = e.tileIds.map((id: number) => tileMap.get(id));
+//     edge.vertices = e.vertexIds.map((id: number) => verticeMap.get(id));
+//   }
+//
+//   g.tiles = [...tileMap.values()];
+//   g.vertices = [...verticeMap.values()];
+//   g.edges = [...edgeMap.values()];
+//   g.ports = ports;
+//   g.structures = structures;
+//   g.devCards = devCards;
+//   return g;
+//
+// }
