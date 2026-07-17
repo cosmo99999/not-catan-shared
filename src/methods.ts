@@ -25,6 +25,15 @@ function contains(array: number[], value: number) {
   if (array.find(v => v == value)) return true;
   return false;
 }
+function overlaps(array: number[], array2: number[]) {
+  array.forEach((a) => {
+    array2.forEach((b) => {
+      if (a == b)
+        return true;
+    })
+  })
+  return false;
+}
 function isEdgeNearStructure(edge: Edge, game: Game): boolean {
   let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
   vertices.forEach((v) => {
@@ -45,20 +54,10 @@ function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boole
   return false;
 }
 function VertexNeighbourHasStructure(vertex: Vertice, game: Game): boolean {
-  let edges: Edge[] = [];
-  vertex.edgeIds.forEach((id) => {
-    edges.push(getEdge(id, game)!)
-  })
-  edges.forEach((e) => {
-    let vertices: Vertice[] = [];
-    e.verticeIds.forEach((id) => {
-      vertices.push(getVertice(id, game)!)
-    })
-    vertices.forEach((v) => {
-      if (v.structureId !== -1 && v.id !== vertex.id) {
-        return true;
-      }
-    })
+  let edges: number[] = game.edges.filter((e) => contains(e.verticeIds, vertex.id)).map(e => e.id);
+  let vertices: Vertice[] = game.vertices.filter((v) => overlaps(v.edgeIds, edges));
+  vertices.forEach((v) => {
+    if (v.structureId !== -1) return true;
   })
   return false;
 }
