@@ -304,15 +304,14 @@ export function SelectStructures(g: Game, me: Player, selectedStructure: Structu
       break;
     }
     case StructureType.City: {
-      let newVertices: Vertice[] = [];
       if (currentSelected == StructureType.City) {
-        newVertices = game.vertices.map(e => {
+        game.vertices = game.vertices.map(e => {
           e.highlighted = false
           return e;
         });
       } else {
         const selectedIds = ValidCityPosition(game, me);
-        newVertices = game.vertices.map(e => {
+        game.vertices = game.vertices.map(e => {
           if (selectedIds.find(s => s == e.id)) {
             e.highlighted = true;
           }
