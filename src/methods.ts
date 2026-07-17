@@ -163,8 +163,9 @@ export function canAfford(type: Purchase, resources: Resource[]): boolean {
   }
   return false;
 }
-export function makePurchase(type: Purchase, p: Player): Player {
-  const player = structuredClone(p);
+export function makePurchase(type: Purchase, p: Player, g: Game): Game {
+  const game = structuredClone(g);
+  const player = game.players.find(pl => pl.id == p.id)!;
   switch (type) {
     case Purchase.City: {
       removeResource(Resource.Wheat, 2, player);
@@ -186,8 +187,7 @@ export function makePurchase(type: Purchase, p: Player): Player {
       removeResource(Resource.Ore, 1, player);
     }
   }
-  return player;
-
+  return game;
 }
 export function BuildCity(vertex: Vertice, p: Player, g: Game): Game {
   const game = structuredClone(g);
