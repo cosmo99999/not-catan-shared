@@ -213,8 +213,8 @@ export function buildBoard(game: Game): Game {
         let v2 = cornerVerts[k];
         e = { id: nextEId++, verticeIds: [-1, -1], tileIds: [], highlighted: false };
         edgeLookup.set(key, e);
-        e.verticeIds.push(v1!.id);
-        e.verticeIds.push(v2!.id);
+        e.verticeIds[0] = v1.id;
+        e.verticeIds[1] = v2.id;
         v1?.edgeIds.push(e.id);
         v2?.edgeIds.push(e.id);
       }
