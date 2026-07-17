@@ -170,21 +170,25 @@ export function makePurchase(type: Purchase, pId: number, g: Game): Game {
     case Purchase.City: {
       removeResource(Resource.Wheat, 2, player);
       removeResource(Resource.Ore, 3, player);
+      break;
     }
     case Purchase.Road: {
       removeResource(Resource.Brick, 1, player);
       removeResource(Resource.Wood, 1, player);
+      break;
     }
     case Purchase.Settlement: {
       removeResource(Resource.Brick, 1, player);
       removeResource(Resource.Wood, 1, player);
       removeResource(Resource.Wheat, 1, player);
       removeResource(Resource.Sheep, 1, player);
+      break;
     }
     case Purchase.DevCard: {
       removeResource(Resource.Wheat, 1, player);
       removeResource(Resource.Sheep, 1, player);
       removeResource(Resource.Ore, 1, player);
+      break;
     }
   }
   return game;
