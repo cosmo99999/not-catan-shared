@@ -48,6 +48,19 @@ function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boole
   })
   return result;
 }
+
+function isEdgeNearFriendlyRoad(edge: Edge, game: Game, pId: number): boolean {
+  let vertices: number[] = game.vertices.filter((v) => contains(v.edgeIds, edge.id)).map(v => v.id);
+  let edges: Edge[] = game.edges.filter((e) => overlaps(e.verticeIds, vertices));
+  let result = false;
+  edges.forEach((e) => {
+    const structure = getStructure(e.id, game);
+    if (structure && structure.playerId == pId) {
+      result = true;
+    }
+  })
+  return result;
+}
 function VertexNeighbourHasStructure(vertex: Vertice, game: Game): boolean {
   let edges: number[] = game.edges.filter((e) => contains(e.verticeIds, vertex.id)).map(e => e.id);
   let vertices: Vertice[] = game.vertices.filter((v) => overlaps(v.edgeIds, edges));
@@ -114,7 +127,9 @@ export function ValidCityPosition(game: Game, player: Player): number[] {
 }
 export function ValidRoadPosition(game: Game, player: Player): number[] {
   let allEdges = game.edges;
-  allEdges = allEdges.filter(e => isEdgeNearFriendlyStructure(e, game, player.id));
+  const nearBuilding = allEdges.filter(e => isEdgeNearFriendlyStructure(e, game, player.id));
+  const nearRoads = allEdges.filter(e => isEdgeNearFriendlyRoad(e, game, player.id));
+  allEdges = [...nearBuilding, ...nearRoads];
   return allEdges.map(e => e.id);
 }
 export function HandleDiceRoll(roll: number, g: Game): Game {
