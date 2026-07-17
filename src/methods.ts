@@ -276,7 +276,7 @@ export function SelectStructures(g: Game, me: Player, selectedStructure: Structu
       } else {
         const selectedIds = ValidRoadPosition(game, me);
         game.edges = game.edges.map(e => {
-          if (selectedIds.find(s => s == e.id)) {
+          if (selectedIds.some(s => s == e.id)) {
             e.highlighted = true;
           }
           return e;
@@ -294,7 +294,7 @@ export function SelectStructures(g: Game, me: Player, selectedStructure: Structu
       } else {
         const selectedIds = ValidSettlementPositions(game, me);
         game.vertices = game.vertices.map(e => {
-          if (selectedIds.find(s => s == e.id)) {
+          if (selectedIds.some(s => s == e.id)) {
             e.highlighted = true;
           }
           return e;
@@ -312,7 +312,7 @@ export function SelectStructures(g: Game, me: Player, selectedStructure: Structu
       } else {
         const selectedIds = ValidCityPosition(game, me);
         game.vertices = game.vertices.map(e => {
-          if (selectedIds.find(s => s == e.id)) {
+          if (selectedIds.some(s => s == e.id)) {
             e.highlighted = true;
           }
           return e;
