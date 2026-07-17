@@ -110,8 +110,8 @@ export function ValidCityPosition(game: Game, player: Player): number[] {
     .map(vx => vx.id);
 }
 export function ValidRoadPosition(game: Game, player: Player): number[] {
-  const allEdges = game.edges;
-  allEdges.filter(e => isEdgeNearFriendlyStructure(e, game, player.id));
+  let allEdges = game.edges;
+  allEdges = allEdges.filter(e => isEdgeNearFriendlyStructure(e, game, player.id));
   return allEdges.map(e => e.id);
 }
 export function HandleDiceRoll(roll: number, g: Game): Game {
