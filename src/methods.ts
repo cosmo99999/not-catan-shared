@@ -103,8 +103,8 @@ export function ValidRoadPosition(game: Game, player: Player): number[] {
   const allEdges = [...game.edges];
   return allEdges.filter(e => isEdgeNearStructure(e, game)).map(e => e.id);
 }
-export function HandleDiceRoll(roll: number, game: Game): Game {
-  const g = structuredClone(game);
+export function HandleDiceRoll(roll: number, g: Game): Game {
+  const game = structuredClone(g);
   g.tiles.forEach((t) => {
     if (t.value == roll && !t.robber) {
       let vertices: Vertice[] = [];
@@ -123,7 +123,7 @@ export function HandleDiceRoll(roll: number, game: Game): Game {
       })
     }
   })
-  return g;
+  return game;
 }
 export function canAfford(type: Purchase, resources: Resource[]): boolean {
   switch (type) {
