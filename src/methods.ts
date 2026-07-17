@@ -240,3 +240,66 @@ export function BuildRoad(edge: Edge, p: Player, g: Game): Game {
   player.structureIds.push(r.id);
   return game;
 }
+export function SelectStructures(g: Game, me: Player, selectedStructure: StructureType, currentSelected: StructureType): [Game, StructureType] {
+  if (!g || !me) return [g, currentSelected];
+  const game = structuredClone(g);
+  let resultSelected: StructureType = StructureType.None;
+  switch (selectedStructure) {
+    case StructureType.Road: {
+      if (currentSelected == StructureType.Road) {
+        game.edges = game.edges.map(e => {
+          e.highlighted = false;
+          return e;
+        })
+      } else {
+        const selectedIds = ValidRoadPosition(game, me);
+        game.edges = game.edges.map(e => {
+          if (selectedIds.find(s => s == e.id)) {
+            e.highlighted = true;
+          }
+          return e;
+        })
+        resultSelected = StructureType.Road;
+      }
+      break;
+    }
+    case StructureType.Settlement: {
+      if (currentSelected == StructureType.Settlement) {
+        game.vertices = game.vertices.map(e => {
+          e.highlighted = false
+          return e;
+        });
+      } else {
+        const selectedIds = ValidSettlementPositions(game, me);
+        game.vertices = game.vertices.map(e => {
+          if (selectedIds.find(s => s == e.id)) {
+            e.highlighted = true;
+          }
+          return e;
+        })
+        resultSelected = StructureType.Settlement;
+      }
+      break;
+    }
+    case StructureType.City: {
+      let newVertices: Vertice[] = [];
+      if (currentSelected == StructureType.City) {
+        newVertices = game.vertices.map(e => {
+          e.highlighted = false
+          return e;
+        });
+      } else {
+        const selectedIds = ValidCityPosition(game, me);
+        newVertices = game.vertices.map(e => {
+          if (selectedIds.find(s => s == e.id)) {
+            e.highlighted = true;
+          }
+          return e;
+        })
+        resultSelected = StructureType.City;
+      }
+    }
+  }
+
+  return [game, resultSelected]
+}

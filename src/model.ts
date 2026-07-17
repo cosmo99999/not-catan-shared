@@ -73,7 +73,8 @@ export enum Resource {
 export enum StructureType {
   Settlement,
   City,
-  Road
+  Road,
+  None
 }
 export enum Purchase {
   Road,
