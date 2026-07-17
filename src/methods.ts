@@ -33,6 +33,18 @@ function isEdgeNearStructure(edge: Edge, game: Game): boolean {
   })
   return false;
 }
+function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boolean {
+  let vertices: Vertice[] = [];
+  edge.verticeIds.forEach((id) => {
+    vertices.push(getVertice(id, game)!)
+  })
+  vertices.forEach((v) => {
+    if (v.structure && v.structure.playerId == pId) {
+      return true;
+    }
+  })
+  return false;
+}
 function VertexNeighbourHasStructure(vertex: Vertice, game: Game): boolean {
   let edges: Edge[] = [];
   vertex.edgeIds.forEach((id) => {
@@ -100,8 +112,9 @@ export function ValidCityPosition(game: Game, player: Player): number[] {
     .map(vx => vx.id);
 }
 export function ValidRoadPosition(game: Game, player: Player): number[] {
-  const allEdges = [...game.edges];
-  return allEdges.filter(e => isEdgeNearStructure(e, game)).map(e => e.id);
+  const allEdges = game.edges;
+  allEdges.filter(e => isEdgeNearFriendlyStructure(e, game, player.id));
+  return allEdges.map(e => e.id);
 }
 export function HandleDiceRoll(roll: number, g: Game): Game {
   const game = structuredClone(g);
