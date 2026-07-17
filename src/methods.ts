@@ -21,11 +21,12 @@ export function getPort(id: number, game: Game) {
 export function getAllStructuresByPlayer(id: number, game: Game) {
   return game.structures.filter((s: Structure) => (s.playerId == id))
 }
+function contains(array: number[], value: number) {
+  if (array.find(v => v == value)) return true;
+  return false;
+}
 function isEdgeNearStructure(edge: Edge, game: Game): boolean {
-  let vertices: Vertice[] = [];
-  edge.verticeIds.forEach((id) => {
-    vertices.push(getVertice(id, game)!)
-  })
+  let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
   vertices.forEach((v) => {
     if (v.structure) {
       return true;
@@ -34,10 +35,7 @@ function isEdgeNearStructure(edge: Edge, game: Game): boolean {
   return false;
 }
 function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boolean {
-  let vertices: Vertice[] = [];
-  edge.verticeIds.forEach((id) => {
-    vertices.push(getVertice(id, game)!)
-  })
+  let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
   vertices.forEach((v) => {
     if (v.structure && v.structure.playerId == pId) {
       return true;
