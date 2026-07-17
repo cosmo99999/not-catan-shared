@@ -211,7 +211,7 @@ export function buildBoard(game: Game): Game {
       if (!e) {
         let v1 = (k + 5) % 6;
         let v2 = k;
-        e = { id: nextEId, verticeIds: [-1, -1], tileIds: [], highlighted: false };
+        e = { id: nextEId++, verticeIds: [-1, -1], tileIds: [], highlighted: false };
         edgeLookup.set(key, e);
         const vOne = getVertice(e.verticeIds[0], game);
         const vTwo = getVertice(e.verticeIds[1], game);
@@ -244,7 +244,6 @@ export function buildBoard(game: Game): Game {
   game.edges = [...edgeLookup.values()];
   game.vertices = [...vertexLookup.values()];
   return game;
-
 }
 export function randomizeBoard(game: Game): Game {
   const numbers: number[] = [...possiblenumbers];
