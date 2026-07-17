@@ -15,6 +15,9 @@ export function getStructure(id: number, game: Game) {
 export function getPlayer(id: number, game: Game) {
   return game.players.find(v => v.id == id);
 }
+export function getPort(id: number, game: Game) {
+  return game.ports.find(v => v.id == id);
+}
 export function getAllStructuresByPlayer(id: number, game: Game) {
   return game.structures.filter((s: Structure) => (s.playerId == id))
 }
