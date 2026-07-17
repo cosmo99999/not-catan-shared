@@ -135,7 +135,7 @@ export interface Vertice {
   edgeIds: number[];
   portId: number;
   tileIds: number[];
-  structure?: Structure;
+  structureId: number;
   xPos: number;
   yPos: number;
   highlighted: boolean;
@@ -195,7 +195,7 @@ export function buildBoard(game: Game): Game {
       const key = vertKey(q, r, k)
       let v = vertexLookup.get(key);
       if (!v) {
-        v = { id: nextVId++, edgeIds: [], tileIds: [], xPos: 0, yPos: 0, highlighted: false, portId: -1 };
+        v = { id: nextVId++, edgeIds: [], tileIds: [], xPos: 0, yPos: 0, highlighted: false, portId: -1, structureId: -1 };
         const { x: vxp, y: vyp } = hexCorner(q, r, (k + 5) % 6);
         v.xPos = vxp;
         v.yPos = vyp;

@@ -28,7 +28,7 @@ function contains(array: number[], value: number) {
 function isEdgeNearStructure(edge: Edge, game: Game): boolean {
   let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
   vertices.forEach((v) => {
-    if (v.structure) {
+    if (v.structureId !== -1) {
       return true;
     }
   })
@@ -37,7 +37,8 @@ function isEdgeNearStructure(edge: Edge, game: Game): boolean {
 function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boolean {
   let vertices = game.vertices.filter((v: Vertice) => contains(v.edgeIds, edge.id));
   vertices.forEach((v) => {
-    if (v.structure && v.structure.playerId == pId) {
+    const structure = getStructure(v.structureId, game);
+    if (structure && structure.playerId == pId) {
       return true;
     }
   })
@@ -54,7 +55,7 @@ function VertexNeighbourHasStructure(vertex: Vertice, game: Game): boolean {
       vertices.push(getVertice(id, game)!)
     })
     vertices.forEach((v) => {
-      if (v.structure && v.id !== vertex.id) {
+      if (v.structureId !== -1 && v.id !== vertex.id) {
         return true;
       }
     })
@@ -104,10 +105,17 @@ export function ValidSettlementPositions(game: Game, player: Player): number[] {
   }
 }
 export function ValidCityPosition(game: Game, player: Player): number[] {
-  const allVerts = [...game.vertices];
-  return allVerts.filter(
-    v => (!VertexNeighbourHasStructure(v, game) && v.structure?.type == StructureType.Settlement && v.structure.playerId == player.id))
-    .map(vx => vx.id);
+  const allVerts = game.vertices;
+  const validPositions: number[] = [];
+  allVerts.forEach((v) => {
+    const structure = getStructure(v.structureId, game);
+    if (structure?.playerId == player.id) {
+      if (structure && structure.type == StructureType.Settlement) {
+        validPositions.push(v.id);
+      }
+    }
+  })
+  return validPositions;
 }
 export function ValidRoadPosition(game: Game, player: Player): number[] {
   let allEdges = game.edges;
@@ -121,12 +129,13 @@ export function HandleDiceRoll(roll: number, g: Game): Game {
       let vertices: Vertice[] = [];
       t.verticeIds.forEach((id) => vertices.push(getVertice(id, game)!));
       vertices.forEach((v) => {
-        if (v.structure) {
-          const p = getPlayer(v.structure.playerId, game);
-          if (v.structure.type == StructureType.Settlement) {
+        if (v.structureId !== -1) {
+          const s = getStructure(v.structureId, game)!;
+          const p = getPlayer(s.playerId, game);
+          if (s.type == StructureType.Settlement) {
             p?.resources.push(t.resource);
           }
-          else if (v.structure.type == StructureType.City) {
+          else if (s.type == StructureType.City) {
             p?.resources.push(t.resource);
             p?.resources.push(t.resource);
           }
@@ -214,12 +223,12 @@ export function BuildCity(vertex: Vertice, pId: number, g: Game): Game {
     playerId: player.id,
   }
 
-  const currentStructureId = vertex.structure!.id;
+  const currentStructureId = vertex.structureId;
   game.structures = game.structures.filter(s => s.id != currentStructureId);
   player.structureIds = player.structureIds.filter(s => s != currentStructureId);
 
   const modifiedVert = game.vertices.find((v) => v.id == vertex.id);
-  modifiedVert!.structure = c;
+  modifiedVert!.structureId = c.id;
   game.structures.push(c);
   player.structureIds.push(c.id);
   return game;
@@ -236,7 +245,7 @@ export function BuildSettlement(vertex: Vertice, pId: number, g: Game): Game {
   }
 
   const modifiedVert = game.vertices.find((v) => v.id == vertex.id);
-  modifiedVert!.structure = s;
+  modifiedVert!.structureId = s.id;
   game.structures.push(s);
   player.structureIds.push(s.id);
   return game;
