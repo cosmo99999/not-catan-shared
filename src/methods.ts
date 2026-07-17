@@ -48,13 +48,12 @@ function isEdgeNearFriendlyStructure(edge: Edge, game: Game, pId: number): boole
   })
   return result;
 }
-
 function isEdgeNearFriendlyRoad(edge: Edge, game: Game, pId: number): boolean {
   let vertices: number[] = game.vertices.filter((v) => contains(v.edgeIds, edge.id)).map(v => v.id);
   let edges: Edge[] = game.edges.filter((e) => overlaps(e.verticeIds, vertices));
   let result = false;
   edges.forEach((e) => {
-    const structure = getStructure(e.id, game);
+    const structure = getStructure(e.structureId, game);
     if (structure && structure.playerId == pId) {
       result = true;
     }
@@ -77,8 +76,8 @@ function VertexHasJoiningRoad(vertex: Vertice, player: Player, game: Game): bool
     edges.push(getEdge(id, game)!)
   })
   edges.forEach((e) => {
-    if (e.structure) {
-      const structure = getStructure(e.structure.id, game)
+    if (e.structureId !== -1) {
+      const structure = getStructure(e.structureId, game)
       if (structure?.playerId == player.id) {
         result = true;
       }
@@ -272,7 +271,7 @@ export function BuildRoad(edge: Edge, pId: number, g: Game): Game {
   }
 
   const modifiedEdge = game.edges.find((v) => v.id == edge.id);
-  modifiedEdge!.structure = r;
+  modifiedEdge!.structureId = r.id;
   game.structures.push(r);
   player.structureIds.push(r.id);
   return game;

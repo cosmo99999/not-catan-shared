@@ -114,7 +114,7 @@ export interface Edge {
   id: number;
   verticeIds: [number, number];
   tileIds: number[];
-  structure?: Structure;
+  structureId: number;
   highlighted: boolean;
 }
 export interface Tile {
@@ -211,7 +211,7 @@ export function buildBoard(game: Game): Game {
       if (!e) {
         let v1 = cornerVerts[(k + 5) % 6];
         let v2 = cornerVerts[k];
-        e = { id: nextEId++, verticeIds: [-1, -1], tileIds: [], highlighted: false };
+        e = { id: nextEId++, verticeIds: [-1, -1], tileIds: [], highlighted: false, structureId: -1 };
         edgeLookup.set(key, e);
         e.verticeIds[0] = v1.id;
         e.verticeIds[1] = v2.id;
