@@ -393,6 +393,7 @@ export function moveRobber(tId: number, g: Game): Game {
   const newPos = game.tiles.find(t => t.id == tId);
   oldPos!.robber = false;
   newPos!.robber = true;
+  game.gameState = GameState.Stealing;
   return game;
 }
 export function selectTilesForRobber(g: Game): Game {
