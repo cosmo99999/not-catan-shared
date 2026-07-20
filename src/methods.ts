@@ -438,9 +438,6 @@ export function PlayDevCard(dId: number, pId: number, g: Game): Game {
       game = selectTilesForRobber(game);
     }
   }
-  if (card.type == DevCardType.RoadBuilding) {
-    [game] = SelectStructures(game, player!, StructureType.Road, StructureType.None)
-  }
   card.played = true;
   return game;
 }
