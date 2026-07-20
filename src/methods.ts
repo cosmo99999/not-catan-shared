@@ -443,3 +443,8 @@ export function Rob(targetId: number, pId: number, g: Game): Game {
   return game;
 
 }
+export function EndYearOfPlenty(g: Game): Game {
+  const game = structuredClone(g);
+  g.gameState = GameState.Turn;
+  return game;
+}
