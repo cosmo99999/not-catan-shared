@@ -381,6 +381,24 @@ export function SelectStructures(g: Game, me: Player, selection: StructureType, 
 
   return [game, resultSelected]
 }
+export function moveRobber(tId: number, g: Game): Game {
+  const game = structuredClone(g);
+  const oldPos = game.tiles.find(t => t.robber);
+  const newPos = game.tiles.find(t => t.id == tId);
+  oldPos!.robber = false;
+  newPos!.robber = true;
+  return game;
+}
+export function selectTilesForRobber(g: Game): Game {
+  const game = structuredClone(g);
+  game.tiles.map((t) => {
+    if (!t.robber) {
+      t.highlighted = true;
+    }
+    return t;
+  })
+  return game;
+}
 export function playDevCard(dId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   let player = getPlayer(pId, game);
