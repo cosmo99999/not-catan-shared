@@ -117,6 +117,9 @@ export interface Edge {
   structureId: number;
   highlighted: boolean;
 }
+export function isEdge(obj: any): obj is Edge {
+  return 'verticeIds' in obj;
+}
 export interface Tile {
   id: number;
   r: number;
@@ -140,6 +143,10 @@ export interface Vertice {
   yPos: number;
   highlighted: boolean;
 }
+
+export function isVertice(obj: any): obj is Vertice {
+  return 'edgeIds' in obj;
+}
 export interface Player {
   id: number;
   name?: string;
@@ -161,6 +168,11 @@ export interface Game {
   devCards: DevCard[];
   currentTurnPlayerId?: number;
   gameState: GameState;
+}
+export enum Location {
+  Vertice,
+  Edge,
+  None
 }
 export function getEmptyGame(): Game {
   return { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll, structureIdCounter: 0 };
