@@ -427,11 +427,10 @@ export function deselectTilesForRobber(g: Game): Game {
   })
   return game;
 }
-export function playDevCard(dId: number, pId: number, g: Game): [Game, StructureType] {
+export function PlayDevCard(dId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   let player = getPlayer(pId, game);
   const card = getDevCard(dId, player!)!;
-  let stypeReturn: StructureType = StructureType.None;
   if (card?.type !== DevCardType.VP) {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
@@ -439,12 +438,11 @@ export function playDevCard(dId: number, pId: number, g: Game): [Game, Structure
       game = selectTilesForRobber(game);
     }
   }
-
   if (card.type == DevCardType.RoadBuilding) {
-    [game, stypeReturn] = SelectStructures(game, player!, StructureType.Road, StructureType.None)
+    [game] = SelectStructures(game, player!, StructureType.Road, StructureType.None)
   }
   card.played = true;
-  return [game, stypeReturn];
+  return game;
 }
 export function Monopoly(resource: Resource, pId: number, g: Game): Game {
   let game = structuredClone(g);
