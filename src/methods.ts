@@ -202,6 +202,12 @@ export function HandleDiceRoll(roll: number, g: Game): Game {
   })
   return game;
 }
+export function AddResource(resource: Resource, pId: number, g: Game) {
+  const game = structuredClone(g);
+  const player = getPlayer(pId, game)!;
+  player.resources.push(resource);
+  return game;
+}
 export function canAfford(type: Purchase, resources: Resource[]): boolean {
   switch (type) {
     case Purchase.City: {
@@ -424,7 +430,6 @@ export function Monopoly(resource: Resource, pId: number, g: Game): Game {
     })
   })
   return game;
-
 }
 export function Rob(targetId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
