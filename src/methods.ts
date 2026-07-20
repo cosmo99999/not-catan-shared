@@ -411,3 +411,30 @@ export function playDevCard(dId: number, pId: number, g: Game): Game {
 
   return game;
 }
+export function Monopoly(resource: Resource, pId: number, g: Game): Game {
+  let game = structuredClone(g);
+  let player = getPlayer(pId, game)!;
+
+  game.players.forEach((p) => {
+    if (p.id == pId) return;
+    const stolen = p.resources.filter(r => r == resource);
+    p.resources = p.resources.filter(r => r == resource);
+    stolen.forEach((s) => {
+      player.resources.push(s);
+    })
+  })
+  return game;
+
+}
+export function Rob(targetId: number, pId: number, g: Game): Game {
+  let game = structuredClone(g);
+  let player = getPlayer(pId, game)!;
+  let target = getPlayer(targetId, game)!;
+
+  let num = getRandomInt(0, target.resources.length);
+  let stolen = target.resources[num];
+  removeResource(stolen, 1, target);
+  player.resources.push(stolen);
+  return game;
+
+}
