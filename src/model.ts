@@ -161,9 +161,9 @@ export interface Player {
   devCards: DevCard[];
 }
 export interface Trade {
+  playerId: number,
   giving: Resource[],
   recieving: Resource[],
-
 }
 export interface Game {
   structureIdCounter: number;
@@ -176,6 +176,7 @@ export interface Game {
   devCards: DevCard[];
   currentTurnPlayerId?: number;
   gameState: GameState;
+  liveTradeOffer?: Trade;
 }
 export enum Location {
   Vertice,
