@@ -445,6 +445,6 @@ export function Rob(targetId: number, pId: number, g: Game): Game {
 }
 export function EndYearOfPlenty(g: Game): Game {
   const game = structuredClone(g);
-  g.gameState = GameState.Turn;
+  game.gameState = GameState.Turn;
   return game;
 }
