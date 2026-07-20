@@ -394,6 +394,17 @@ export function SelectStructures(g: Game, me: Player, selection: StructureType, 
 
   return [game, resultSelected]
 }
+export function ReselectRoadsForRoadBuilding(pId: number, g: Game): Game {
+  const game = structuredClone(g);
+  const selectedIds = ValidRoadPosition(game, getPlayer(pId, game)!);
+  game.edges = game.edges.map(e => {
+    if (selectedIds.some(s => s == e.id)) {
+      e.highlighted = true;
+    }
+    return e;
+  })
+  return game;
+}
 export function moveRobber(tId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   const oldPos = game.tiles.find(t => t.robber);
