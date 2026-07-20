@@ -1,4 +1,4 @@
-import { DevCard, Edge, Game, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Vertice } from "./model";
+import { DevCard, DevCardType, Edge, Game, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Vertice } from "./model";
 export function structureTypeToPurchase(type: StructureType): Purchase | null {
   switch (type) {
     case StructureType.Settlement: return Purchase.Settlement;
@@ -14,6 +14,14 @@ export function purchaseToStructureType(purchase: Purchase): StructureType | nul
     case Purchase.Road: return StructureType.Road;
   }
   return null;
+}
+export function devCardToGameState(dtype: DevCardType) {
+  switch (dtype) {
+    case DevCardType.RoadBuilding: return GameState.RoadBuilding;
+    case DevCardType.YearOfPlenty: return GameState.YearOfPlenty;
+    case DevCardType.Monopoly: return GameState.Monopoly;
+    case DevCardType.Knight: return GameState.RobberPlacing;
+  }
 }
 export function getVertice(id: number, game: Game) {
   return game.vertices.find(v => v.id == id);
@@ -32,6 +40,10 @@ export function getPlayer(id: number, game: Game) {
 }
 export function getPort(id: number, game: Game) {
   return game.ports.find(v => v.id == id);
+}
+export function getDevCard(id: number, player: Player) {
+  return player.devCards.find(d => d.id == id);
+
 }
 export function getAllStructuresByPlayer(id: number, game: Game) {
   return game.structures.filter((s: Structure) => (s.playerId == id))
@@ -258,7 +270,7 @@ export function makePurchase(type: Purchase, pId: number, g: Game): Game {
   }
   return game;
 }
-export function getDevCard(pId: number, g: Game): Game {
+export function getNewDevCard(pId: number, g: Game): Game {
   const game = structuredClone(g);
   const p = getPlayer(pId, game);
   const num = getRandomInt(0, game.devCards.length);
@@ -275,7 +287,7 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
   game = makePurchase(purchase, player.id, game);
 
   if (purchase == Purchase.DevCard) {
-    game = getDevCard(pId, game);
+    game = getNewDevCard(pId, game);
     return game;
   }
   switch (purchase) {
@@ -368,4 +380,16 @@ export function SelectStructures(g: Game, me: Player, selection: StructureType, 
   }
 
   return [game, resultSelected]
+}
+export function playDevCard(dId: number, pId: number, g: Game): Game {
+  let game = structuredClone(g);
+  let player = getPlayer(pId, game);
+  const card = getDevCard(dId, player!)!;
+  if (card?.type !== DevCardType.VP) {
+    const gstate = devCardToGameState(card!.type)!;
+    game.gameState = gstate;
+  }
+  card.played = true;
+
+  return game;
 }

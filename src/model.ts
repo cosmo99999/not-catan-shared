@@ -60,6 +60,9 @@ export enum GameState {
   Discard,
   RobberPlacing,
   Stealing,
+  RoadBuilding,
+  Monopoly,
+  YearOfPlenty,
   Turn,
 }
 export enum Resource {
@@ -98,6 +101,7 @@ export enum DevCardType {
 export interface DevCard {
   id: number;
   type: DevCardType;
+  played: boolean;
 }
 export interface Structure {
   id: number;
@@ -155,7 +159,6 @@ export interface Player {
   structureIds: number[];
   resources: Resource[];
   devCards: DevCard[];
-  playedDevCards: DevCard[];
 }
 export interface Game {
   structureIdCounter: number;
@@ -239,15 +242,15 @@ export function buildBoard(game: Game): Game {
   let devCardCounter = 0;
   for (let i = 0; i < 25; i++) {
     if (i < 14) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.Knight });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.Knight, played: false });
     } else if (i < 19) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.VP });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.VP, played: false });
     } else if (i < 21) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.RoadBuilding });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.RoadBuilding, played: false });
     } else if (i < 23) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.Monopoly });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.Monopoly, played: false });
     } else {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.YearOfPlenty });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.YearOfPlenty, played: false });
     }
   }
   game.tiles = tiles;
@@ -312,10 +315,10 @@ export function randomizeBoard(game: Game): Game {
 }
 
 export function seed(game: Game): Game {
-  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
-  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
-  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
-  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevCards: [] };
+  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
+  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
+  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
+  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
 
   p1.name = "rory";
   p2.name = "alec";
