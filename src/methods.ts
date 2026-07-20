@@ -449,6 +449,22 @@ export function Monopoly(resource: Resource, pId: number, g: Game): Game {
   game.gameState = GameState.Turn;
   return game;
 }
+export function RoadBuildingFreeRoad(eId: number, pId: number, g: Game): Game {
+  let game = structuredClone(g);
+  const player = getPlayer(pId, game)!;
+  const edge = getEdge(eId, game)!;
+  const building = {
+    id: game.structureIdCounter++,
+    colour: player.colour,
+    type: StructureType.Road,
+    playerId: player.id,
+  }
+  player.structureIds.push(building.id);
+  game.structures.push(building);
+  edge.structureId = building.id;
+
+  return game;
+}
 export function Rob(targetId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   let player = getPlayer(pId, game)!;
