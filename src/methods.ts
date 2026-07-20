@@ -7,6 +7,14 @@ export function structureTypeToPurchase(type: StructureType): Purchase | null {
   }
   return null;
 }
+export function purchaseToStructureType(purchase: Purchase): StructureType | null {
+  switch (purchase) {
+    case Purchase.Settlement: return StructureType.Settlement;
+    case Purchase.City: return StructureType.City;
+    case Purchase.Road: return StructureType.Road;
+  }
+  return null;
+}
 export function getVertice(id: number, game: Game) {
   return game.vertices.find(v => v.id == id);
 }
