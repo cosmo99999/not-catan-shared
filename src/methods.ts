@@ -324,7 +324,20 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
   player.structureIds.push(building.id);
   return game;
 }
+function deselectEdges(g: Game) {
+  g.edges.map(e => {
+    e.highlighted = false;
+    return e;
+  })
+}
+function deselectVertices(g: Game) {
+  g.vertices.map(e => {
+    e.highlighted = false;
+    return e;
+  })
+}
 export function SelectStructures(g: Game, me: Player, selection: StructureType, currentSelected: StructureType): [Game, StructureType] {
+
   if (!g || !me) return [g, currentSelected];
   const game = structuredClone(g);
   let resultSelected: StructureType = StructureType.None;
@@ -332,11 +345,9 @@ export function SelectStructures(g: Game, me: Player, selection: StructureType, 
   switch (selection) {
     case StructureType.Road: {
       if (currentSelected == StructureType.Road) {
-        game.edges = game.edges.map(e => {
-          e.highlighted = false;
-          return e;
-        })
+        deselectEdges(game);
       } else {
+        deselectVertices(game);
         const selectedIds = ValidRoadPosition(game, me);
         game.edges = game.edges.map(e => {
           if (selectedIds.some(s => s == e.id)) {
@@ -350,11 +361,9 @@ export function SelectStructures(g: Game, me: Player, selection: StructureType, 
     }
     case StructureType.Settlement: {
       if (currentSelected == StructureType.Settlement) {
-        game.vertices = game.vertices.map(e => {
-          e.highlighted = false
-          return e;
-        });
+        deselectVertices(game);
       } else {
+        deselectEdges(game);
         const selectedIds = ValidSettlementPositions(game, me);
         game.vertices = game.vertices.map(e => {
           if (selectedIds.some(s => s == e.id)) {
@@ -368,11 +377,9 @@ export function SelectStructures(g: Game, me: Player, selection: StructureType, 
     }
     case StructureType.City: {
       if (currentSelected == StructureType.City) {
-        game.vertices = game.vertices.map(e => {
-          e.highlighted = false
-          return e;
-        });
+        deselectVertices(game);
       } else {
+        deselectEdges(game);
         const selectedIds = ValidCityPosition(game, me);
         game.vertices = game.vertices.map(e => {
           if (selectedIds.some(s => s == e.id)) {
@@ -420,10 +427,11 @@ export function deselectTilesForRobber(g: Game): Game {
   })
   return game;
 }
-export function playDevCard(dId: number, pId: number, g: Game): Game {
+export function playDevCard(dId: number, pId: number, g: Game): [Game, StructureType] {
   let game = structuredClone(g);
   let player = getPlayer(pId, game);
   const card = getDevCard(dId, player!)!;
+  let stypeReturn: StructureType = StructureType.None;
   if (card?.type !== DevCardType.VP) {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
@@ -431,8 +439,12 @@ export function playDevCard(dId: number, pId: number, g: Game): Game {
       game = selectTilesForRobber(game);
     }
   }
+
+  if (card.type == DevCardType.RoadBuilding) {
+    [game, stypeReturn] = SelectStructures(game, player!, StructureType.Road, StructureType.None)
+  }
   card.played = true;
-  return game;
+  return [game, stypeReturn];
 }
 export function Monopoly(resource: Resource, pId: number, g: Game): Game {
   let game = structuredClone(g);
