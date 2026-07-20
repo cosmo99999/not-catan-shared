@@ -1,5 +1,12 @@
 import { DevCard, Edge, Game, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Vertice } from "./model";
-
+export function structureTypeToPurchase(type: StructureType): Purchase | null {
+  switch (type) {
+    case StructureType.Settlement: return Purchase.Settlement;
+    case StructureType.City: return Purchase.City;
+    case StructureType.Road: return Purchase.Road;
+  }
+  return null;
+}
 export function getVertice(id: number, game: Game) {
   return game.vertices.find(v => v.id == id);
 }
