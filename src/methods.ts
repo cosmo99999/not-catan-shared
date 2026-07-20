@@ -413,7 +413,7 @@ export function playDevCard(dId: number, pId: number, g: Game): Game {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
     if (gstate == GameState.RobberPlacing) {
-      game = selectTilesForRobber(g);
+      game = selectTilesForRobber(game);
     }
   }
   card.played = true;
