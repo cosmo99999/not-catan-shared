@@ -324,22 +324,13 @@ export function seed(game: Game): Game {
   p2.name = "alec";
   p3.name = "milo";
   p4.name = "ham";
-  p1.resources.push(Resource.Brick);
-  p1.resources.push(Resource.Sheep);
-  p1.resources.push(Resource.Wood);
-  p1.resources.push(Resource.Wheat);
-  p1.resources.push(Resource.Brick);
-  p1.resources.push(Resource.Sheep);
-  p1.resources.push(Resource.Wood);
-  p1.resources.push(Resource.Wheat);
-  p1.resources.push(Resource.Brick);
-  p1.resources.push(Resource.Sheep);
-  p1.resources.push(Resource.Wood);
-  p1.resources.push(Resource.Wheat);
-  p1.resources.push(Resource.Brick);
-  p1.resources.push(Resource.Sheep);
-  p1.resources.push(Resource.Wood);
-  p1.resources.push(Resource.Wheat);
+  for (let i = 0; i < 15; i++) {
+    p1.resources.push(Resource.Wheat);
+    p1.resources.push(Resource.Ore);
+    p1.resources.push(Resource.Wood);
+    p1.resources.push(Resource.Brick);
+    p1.resources.push(Resource.Sheep);
+  }
   p2.resources.push(Resource.Sheep);
   p2.resources.push(Resource.Sheep);
   p2.resources.push(Resource.Ore);

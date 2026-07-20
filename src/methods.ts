@@ -412,9 +412,11 @@ export function playDevCard(dId: number, pId: number, g: Game): Game {
   if (card?.type !== DevCardType.VP) {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
+    if (gstate == GameState.RobberPlacing) {
+      game = selectTilesForRobber(g);
+    }
   }
   card.played = true;
-
   return game;
 }
 export function Monopoly(resource: Resource, pId: number, g: Game): Game {
