@@ -131,7 +131,7 @@ export function rollDice(): [number, number] {
 }
 export function ValidSettlementPositions(game: Game, player: Player): number[] {
   const allVerts = [...game.vertices];
-  const potential = allVerts.filter(v => !VertexNeighbourHasStructure(v, game));
+  const potential = allVerts.filter(v => !VertexNeighbourHasStructure(v, game) && v.structureId == -1);
   const structures = getAllStructuresByPlayer(player.id, game);
   const settlements = structures.filter(s => s.type == StructureType.Settlement).length;
   if (settlements < 2 || !settlements) {
