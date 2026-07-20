@@ -160,6 +160,11 @@ export interface Player {
   resources: Resource[];
   devCards: DevCard[];
 }
+export interface Trade {
+  giving: Resource[],
+  recieving: Resource[],
+
+}
 export interface Game {
   structureIdCounter: number;
   tiles: Tile[];
