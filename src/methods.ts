@@ -446,6 +446,7 @@ export function Monopoly(resource: Resource, pId: number, g: Game): Game {
       player.resources.push(s);
     })
   })
+  game.gameState = GameState.Turn;
   return game;
 }
 export function Rob(targetId: number, pId: number, g: Game): Game {
