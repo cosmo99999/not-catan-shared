@@ -292,6 +292,11 @@ export function RoadBuilding(eId: number, pId: number, g: Game): Game {
 
   return game;
 }
+export function YearOfPlenty(pId: number, resource: Resource, g: Game): Game {
+  const game = structuredClone(g);
+  AddResource(resource, pId, game);
+  return game;
+}
 export function EndEventGameState(g: Game): Game {
   const game = structuredClone(g);
   game.gameState = GameState.Turn;
