@@ -227,7 +227,7 @@ export function MoveRobber(tId: number, pId: number, g: Game): Game {
   const newPos = game.tiles.find(t => t.id == tId);
   oldPos!.robber = false;
   newPos!.robber = true;
-  const otherPlayersWithResources = game.players.filter(p => p.id !== pId && p.resources.length > 0);
+  const otherPlayersWithResources: Player[] = game.players.filter(p => p.id !== pId && p.resources.length > 0);
   if (otherPlayersWithResources.length == 0) {
     game.gameState = GameState.Turn;
   } else {
