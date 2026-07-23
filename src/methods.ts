@@ -1,4 +1,4 @@
-import { DevCard, DevCardType, Edge, Game, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Trade, Vertice } from "./model";
+import { DevCard, DevCardType, Edge, Game, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Tile, Trade, Vertice } from "./model";
 export function structureTypeToPurchase(type: StructureType): Purchase | null {
   switch (type) {
     case StructureType.Settlement: return Purchase.Settlement;
@@ -57,6 +57,19 @@ export function getEdgesByList(ids: number[], game: Game) {
   return edges;
 }
 
+export function getPlayersToRob(game: Game, pId: number) {
+  const robberTile: Tile = game.tiles.find(t => t.robber == true)!;
+  const vertices = getVerticesByList(robberTile.verticeIds, game);
+  let players: number[] = [];
+  vertices.map((v) => {
+    const structure = getStructure(v.structureId, game);
+    if (structure && structure.playerId !== pId)
+      players.push(structure.playerId!);
+  });
+
+  if (players.length == 0) return;
+  return [...new Set(players.map(p => getPlayer(p!, game)))];
+}
 function AddResource(resource: Resource, pId: number, game: Game) {
   const player = getPlayer(pId, game)!;
   player.resources.push(resource);
@@ -227,8 +240,8 @@ export function MoveRobber(tId: number, pId: number, g: Game): Game {
   const newPos = game.tiles.find(t => t.id == tId);
   oldPos!.robber = false;
   newPos!.robber = true;
-  const otherPlayersWithResources: Player[] = game.players.filter(p => p.id !== pId && p.resources.length > 0);
-  if (otherPlayersWithResources.length == 0) {
+  const players = getPlayersToRob(game, pId);
+  if (!players || players.length == 0) {
     game.gameState = GameState.Turn;
   } else {
     game.gameState = GameState.Stealing;
