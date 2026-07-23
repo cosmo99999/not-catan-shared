@@ -57,13 +57,11 @@ export function getEdgesByList(ids: number[], game: Game) {
   return edges;
 }
 
-function AddResource(resource: Resource, pId: number, g: Game) {
-  const game = structuredClone(g);
+function AddResource(resource: Resource, pId: number, game: Game) {
   const player = getPlayer(pId, game)!;
   player.resources.push(resource);
 }
-function RemoveResource(resource: Resource, pId: number, g: Game) {
-  const game = structuredClone(g);
+function RemoveResource(resource: Resource, pId: number, game: Game) {
   const player = getPlayer(pId, game)!;
   const index = player.resources.findIndex(r => r == resource);
   player.resources.splice(index, 1);
