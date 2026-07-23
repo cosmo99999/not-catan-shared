@@ -56,6 +56,7 @@ export function getEdgesByList(ids: number[], game: Game) {
   const edges = game.edges.filter(v => ids.some(i => i == v.id));
   return edges;
 }
+
 function AddResource(resource: Resource, pId: number, g: Game) {
   const game = structuredClone(g);
   const player = getPlayer(pId, game)!;
@@ -67,36 +68,7 @@ function RemoveResource(resource: Resource, pId: number, g: Game) {
   const index = player.resources.findIndex(r => r == resource);
   player.resources.splice(index, 1);
 }
-export function rollDice(): [number, number] {
-  const d1 = getRandomInt(1, 7);
-  const d2 = getRandomInt(1, 7);
-  return [d1, d2];
-}
-
-export function HandleDiceRoll(roll: number, g: Game): Game {
-  const game = structuredClone(g);
-  g.tiles.forEach((t) => {
-    if (t.value == roll && !t.robber) {
-      let vertices: Vertice[] = getVerticesByList(t.verticeIds, game);
-      vertices.forEach((v) => {
-        if (v.structureId !== -1) {
-          const s = getStructure(v.structureId, game)!;
-          const p = getPlayer(s.playerId, game)!;
-          if (s.type == StructureType.Settlement) {
-            AddResource(t.resource, p.id, game)
-          }
-          else if (s.type == StructureType.City) {
-            AddResource(t.resource, p.id, game)
-            AddResource(t.resource, p.id, game)
-          }
-        }
-      })
-    }
-  })
-  return game;
-}
-
-export function canAfford(type: Purchase, resources: Resource[]): boolean {
+export function CanAfford(type: Purchase, resources: Resource[]): boolean {
   switch (type) {
     case Purchase.City: {
       const wheat = resources.filter(r => r == Resource.Wheat).length;
@@ -134,7 +106,30 @@ export function canAfford(type: Purchase, resources: Resource[]): boolean {
   }
   return false;
 }
-export function makePurchase(type: Purchase, pId: number, g: Game): Game {
+
+export function HandleDiceRoll(roll: number, g: Game): Game {
+  const game = structuredClone(g);
+  g.tiles.forEach((t) => {
+    if (t.value == roll && !t.robber) {
+      let vertices: Vertice[] = getVerticesByList(t.verticeIds, game);
+      vertices.forEach((v) => {
+        if (v.structureId !== -1) {
+          const s = getStructure(v.structureId, game)!;
+          const p = getPlayer(s.playerId, game)!;
+          if (s.type == StructureType.Settlement) {
+            AddResource(t.resource, p.id, game)
+          }
+          else if (s.type == StructureType.City) {
+            AddResource(t.resource, p.id, game)
+            AddResource(t.resource, p.id, game)
+          }
+        }
+      })
+    }
+  })
+  return game;
+}
+export function MakePurchase(type: Purchase, pId: number, g: Game): Game {
   const game = structuredClone(g);
   switch (type) {
     case Purchase.City: {
@@ -165,7 +160,7 @@ export function makePurchase(type: Purchase, pId: number, g: Game): Game {
   }
   return game;
 }
-export function getNewDevCard(pId: number, g: Game): Game {
+export function GetDevCard(pId: number, g: Game): Game {
   const game = structuredClone(g);
   const p = getPlayer(pId, game);
   const num = getRandomInt(0, game.devCards.length);
@@ -179,10 +174,10 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
   let player = getPlayer(pId, game)!;
   let building: Structure;
   let stype: StructureType = StructureType.None;
-  game = makePurchase(purchase, player.id, game);
+  game = MakePurchase(purchase, player.id, game);
 
   if (purchase == Purchase.DevCard) {
-    game = getNewDevCard(pId, game);
+    game = GetDevCard(pId, game);
     return game;
   }
   switch (purchase) {
@@ -213,6 +208,7 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
   player.structureIds.push(building.id);
   return game;
 }
+
 export function CreateTrade(trade: Trade, g: Game) {
   const game = structuredClone(g);
   game.liveTradeOffer = trade;
@@ -227,7 +223,7 @@ export function AcceptTrade(pId: number, trade: Trade, g: Game) {
     AddResource(r, tradeOfferPlayerId, game);
   })
 }
-export function moveRobber(tId: number, pId: number, g: Game): Game {
+export function MoveRobber(tId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   const oldPos = game.tiles.find(t => t.robber);
   const newPos = game.tiles.find(t => t.id == tId);
@@ -239,27 +235,9 @@ export function moveRobber(tId: number, pId: number, g: Game): Game {
   } else {
     game.gameState = GameState.Stealing;
   }
-  game = deselectTilesForRobber(game);
   return game;
 }
-export function selectTilesForRobber(g: Game): Game {
-  const game = structuredClone(g);
-  game.tiles.map((t) => {
-    if (!t.robber) {
-      t.highlighted = true;
-    }
-    return t;
-  })
-  return game;
-}
-export function deselectTilesForRobber(g: Game): Game {
-  const game = structuredClone(g);
-  game.tiles.map((t) => {
-    t.highlighted = false;
-    return t;
-  })
-  return game;
-}
+
 //dev card event handling
 export function PlayDevCard(dId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
@@ -268,9 +246,6 @@ export function PlayDevCard(dId: number, pId: number, g: Game): Game {
   if (card?.type !== DevCardType.VP) {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
-    if (gstate == GameState.RobberPlacing) {
-      game = selectTilesForRobber(game);
-    }
   }
   card.played = true;
   return game;
@@ -299,6 +274,22 @@ export function Rob(targetId: number, pId: number, g: Game): Game {
   RemoveResource(stolen, targetId, game);
   player.resources.push(stolen);
   game.gameState = GameState.Turn;
+  return game;
+}
+export function RoadBuilding(eId: number, pId: number, g: Game): Game {
+  let game = structuredClone(g);
+  const player = getPlayer(pId, game)!;
+  const edge = getEdge(eId, game)!;
+  const building = {
+    id: game.structureIdCounter++,
+    colour: player.colour,
+    type: StructureType.Road,
+    playerId: player.id,
+  }
+  player.structureIds.push(building.id);
+  game.structures.push(building);
+  edge.structureId = building.id;
+
   return game;
 }
 export function EndEventGameState(g: Game): Game {
