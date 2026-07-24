@@ -177,6 +177,8 @@ export interface Game {
   currentTurnPlayerId?: number;
   gameState: GameState;
   liveTradeOffer?: Trade;
+  longestRoadId: number;
+  largestArmyId: number;
 }
 export enum Location {
   Vertice,
@@ -184,7 +186,15 @@ export enum Location {
   None
 }
 export function getEmptyGame(): Game {
-  return { tiles: [], structures: [], edges: [], vertices: [], players: [], ports: [], devCards: [], gameState: GameState.PreRoll, structureIdCounter: 0 };
+  return {
+    tiles: [], structures: [],
+    edges: [], vertices: [],
+    players: [], ports: [],
+    devCards: [], gameState: GameState.PreRoll,
+    structureIdCounter: 0,
+    longestRoadId: -1,
+    largestArmyId: -1
+  };
 }
 export function buildBoard(game: Game): Game {
   const tiles: Tile[] = [];
