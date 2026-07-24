@@ -178,7 +178,9 @@ export interface Game {
   gameState: GameState;
   liveTradeOffer?: Trade;
   longestRoadId: number;
+  longestRoadSize: number;
   largestArmyId: number;
+  largestArmySize: number;
 }
 export enum Location {
   Vertice,
@@ -193,7 +195,9 @@ export function getEmptyGame(): Game {
     devCards: [], gameState: GameState.PreRoll,
     structureIdCounter: 0,
     longestRoadId: -1,
-    largestArmyId: -1
+    largestArmyId: -1,
+    largestArmySize: -1,
+    longestRoadSize: -1,
   };
 }
 export function buildBoard(game: Game): Game {
