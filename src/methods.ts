@@ -233,6 +233,7 @@ export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
   if (game.gameState !== GameState.Start) {
     const nextPlayerId = (pId + 1) % game.players.length;
+    game.gameState = GameState.PreRoll;
     game.currentTurnPlayerId = nextPlayerId;
   } else {
     if (gameStartOrder.length == game.gameStartOrderIndex) {
