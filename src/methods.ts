@@ -231,7 +231,7 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
 }
 export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
-  const nextPlayerId = (pId++) % game.players.length;
+  const nextPlayerId = (pId + 1) % game.players.length;
   game.currentTurnPlayerId = nextPlayerId;
   return game;
 }
