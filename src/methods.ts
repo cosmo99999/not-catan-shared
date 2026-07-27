@@ -234,15 +234,22 @@ export function CreateTrade(trade: Trade, g: Game) {
   game.liveTradeOffer = trade;
   return game;
 }
-export function AcceptTrade(pId: number, g: Game) {
+export function AcceptTrade(pId: number, g: Game): Game {
   let game = structuredClone(g);
   const trade = game.liveTradeOffer!;
   const tradeOfferPlayerId = trade.playerId;
   const tradeAccepterPlayerId = pId;
+
   trade.recieving.forEach((r) => {
     RemoveResource(r, tradeAccepterPlayerId, game);
     AddResource(r, tradeOfferPlayerId, game);
   })
+
+  trade.giving.forEach((r) => {
+    RemoveResource(r, tradeOfferPlayerId, game);
+    AddResource(r, tradeAccepterPlayerId, game);
+  })
+  return game;
 }
 export function CancelTrade(g: Game) {
   const game = structuredClone(g);
