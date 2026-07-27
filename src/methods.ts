@@ -232,17 +232,17 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
 export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
   if (game.gameState !== GameState.Start) {
-    if (gameStartOrder.length == game.gameStartOrderIndex + 1) {
-      game.currentTurnPlayerId = 0;
-      game.gameState = GameState.PreRoll;
-      return game;
-    }
     const nextPlayerId = (pId + 1) % game.players.length;
     game.currentTurnPlayerId = nextPlayerId;
   } else {
-    const nextPlayerId = gameStartOrder[game.gameStartOrderIndex];
-    game.currentTurnPlayerId = nextPlayerId;
-    game.gameStartOrderIndex++;
+    if (gameStartOrder.length == game.gameStartOrderIndex + 1) {
+      game.currentTurnPlayerId = 0;
+      game.gameState = GameState.PreRoll;
+    } else {
+      const nextPlayerId = gameStartOrder[game.gameStartOrderIndex];
+      game.currentTurnPlayerId = nextPlayerId;
+      game.gameStartOrderIndex++;
+    }
   }
   return game;
 }
