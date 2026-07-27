@@ -56,6 +56,7 @@ export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
 export enum GameState {
+  Start,
   PreRoll,
   Discard,
   RobberPlacing,
@@ -192,7 +193,7 @@ export function getEmptyGame(): Game {
     tiles: [], structures: [],
     edges: [], vertices: [],
     players: [], ports: [],
-    devCards: [], gameState: GameState.PreRoll,
+    devCards: [], gameState: GameState.Start,
     structureIdCounter: 0,
     longestRoadId: -1,
     largestArmyId: -1,
