@@ -243,6 +243,11 @@ export function AcceptTrade(pId: number, trade: Trade, g: Game) {
     AddResource(r, tradeOfferPlayerId, game);
   })
 }
+export function CancelTrade(g: Game) {
+  const game = structuredClone(g);
+  game.liveTradeOffer = undefined;
+  return game;
+}
 export function MakeBankTrade(trade: Trade, g: Game) {
   let game = structuredClone(g);
   trade.giving.forEach((g) => {
