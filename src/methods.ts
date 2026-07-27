@@ -235,7 +235,7 @@ export function EndTurn(pId: number, g: Game) {
     const nextPlayerId = (pId + 1) % game.players.length;
     game.currentTurnPlayerId = nextPlayerId;
   } else {
-    if (gameStartOrder.length == game.gameStartOrderIndex + 1) {
+    if (gameStartOrder.length == game.gameStartOrderIndex) {
       game.currentTurnPlayerId = 0;
       game.gameState = GameState.PreRoll;
     } else {
