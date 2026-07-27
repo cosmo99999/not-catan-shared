@@ -232,7 +232,7 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
 export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
   if (game.gameState !== GameState.Start) {
-    if (gameStartOrder.length == game.gameStartOrderIndex - 1) {
+    if (gameStartOrder.length == game.gameStartOrderIndex + 1) {
       game.currentTurnPlayerId = 0;
       game.gameState = GameState.PreRoll;
       return game;
