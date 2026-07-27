@@ -349,6 +349,22 @@ export function RoadBuilding(eId: number, pId: number, g: Game): Game {
 
   return game;
 }
+export function StartingSettlement(vId: number, pId: number, g: Game): Game {
+  let game = structuredClone(g);
+  const player = getPlayer(pId, game)!;
+  const vertex = getVertice(vId, game)!;
+  const building = {
+    id: game.structureIdCounter++,
+    colour: player.colour,
+    type: StructureType.Settlement,
+    playerId: player.id,
+  }
+  player.structureIds.push(building.id);
+  game.structures.push(building);
+  vertex.structureId = building.id;
+
+  return game;
+}
 export function YearOfPlenty(pId: number, resource: Resource, g: Game): Game {
   const game = structuredClone(g);
   AddResource(resource, pId, game);
