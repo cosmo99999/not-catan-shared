@@ -1,4 +1,4 @@
-import { DevCard, DevCardType, Edge, Game, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Tile, Trade, Vertice } from "./model";
+import { DevCard, DevCardType, Edge, Game, gameStartOrder, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Tile, Trade, Vertice } from "./model";
 export function structureTypeToPurchase(type: StructureType): Purchase | null {
   switch (type) {
     case StructureType.Settlement: return Purchase.Settlement;
@@ -231,8 +231,19 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
 }
 export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
-  const nextPlayerId = (pId + 1) % game.players.length;
-  game.currentTurnPlayerId = nextPlayerId;
+  if (game.gameState !== GameState.Start) {
+    if (gameStartOrder.length == game.gameStartOrderIndex - 1) {
+      game.currentTurnPlayerId = 0;
+      game.gameState = GameState.PreRoll;
+      return game;
+    }
+    const nextPlayerId = (pId + 1) % game.players.length;
+    game.currentTurnPlayerId = nextPlayerId;
+  } else {
+    const nextPlayerId = gameStartOrder[game.gameStartOrderIndex];
+    game.currentTurnPlayerId = nextPlayerId;
+    game.gameStartOrderIndex++;
+  }
   return game;
 }
 
@@ -365,6 +376,7 @@ export function StartingSettlement(vId: number, pId: number, g: Game): Game {
 
   return game;
 }
+
 export function YearOfPlenty(pId: number, resource: Resource, g: Game): Game {
   const game = structuredClone(g);
   AddResource(resource, pId, game);
