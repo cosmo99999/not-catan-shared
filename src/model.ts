@@ -11,7 +11,7 @@ const possilberesources = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4]
 const portNums = [0, 1, 2, 3, 4, 5, 5, 5, 5];
 const portSpacings = [3, 4, 3, 3, 3, 3, 3, 4, 3];
 const portVertexOrderedIds = [26, 27, 24, 25, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 50, 53];
-
+const gameStartOrder = [0, 1, 2, 3, 3, 2, 1, 0];
 const size = 65;
 function hexCorner(q: number, r: number, i: number) {
   const { x: cx, y: cy } = axialToPixel(q, r);
@@ -167,6 +167,7 @@ export interface Trade {
   recieving: Resource[],
 }
 export interface Game {
+  gameStartOrderIndex: number;
   structureIdCounter: number;
   tiles: Tile[];
   vertices: Vertice[];
@@ -190,6 +191,7 @@ export enum Location {
 }
 export function getEmptyGame(): Game {
   return {
+    gameStartOrderIndex: 0,
     tiles: [], structures: [],
     edges: [], vertices: [],
     players: [], ports: [],
