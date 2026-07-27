@@ -120,6 +120,15 @@ export function CanAfford(type: Purchase, resources: Resource[]): boolean {
 
 export function HandleDiceRoll(roll: number, g: Game): Game {
   const game = structuredClone(g);
+  if (roll == 7) {
+    const playersWithSevenCards = game.players.filter(p => p.resources.length >= 7);
+    if (playersWithSevenCards.length > 0) {
+      game.gameState = GameState.Discard;
+    } else {
+      game.gameState = GameState.RobberPlacing;
+    }
+    return game;
+  }
   g.tiles.forEach((t) => {
     if (t.value == roll && !t.robber) {
       let vertices: Vertice[] = getVerticesByList(t.verticeIds, game);
@@ -256,6 +265,13 @@ export function MoveRobber(tId: number, pId: number, g: Game): Game {
   } else {
     game.gameState = GameState.Stealing;
   }
+  return game;
+}
+export function Discard(resources: Resource[], pId: number, g: Game) {
+  const game = structuredClone(g);
+  resources.forEach((r) => {
+    RemoveResource(r, pId, game);
+  })
   return game;
 }
 
