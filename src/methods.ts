@@ -234,8 +234,9 @@ export function CreateTrade(trade: Trade, g: Game) {
   game.liveTradeOffer = trade;
   return game;
 }
-export function AcceptTrade(pId: number, trade: Trade, g: Game) {
+export function AcceptTrade(pId: number, g: Game) {
   let game = structuredClone(g);
+  const trade = game.liveTradeOffer!;
   const tradeOfferPlayerId = trade.playerId;
   const tradeAccepterPlayerId = pId;
   trade.recieving.forEach((r) => {
