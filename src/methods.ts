@@ -147,6 +147,7 @@ export function HandleDiceRoll(roll: number, g: Game): Game {
       })
     }
   })
+  game.gameState = GameState.Turn;
   return game;
 }
 export function MakePurchase(type: Purchase, pId: number, g: Game): Game {
