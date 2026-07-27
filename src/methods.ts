@@ -229,6 +229,12 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
   player.structureIds.push(building.id);
   return game;
 }
+export function EndTurn(pId: number, g: Game) {
+  const game = structuredClone(g);
+  const nextPlayerId = (pId++) % game.players.length;
+  game.currentTurnPlayerId = nextPlayerId;
+  return game;
+}
 
 export function CreateTrade(trade: Trade, g: Game) {
   const game = structuredClone(g);
