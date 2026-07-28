@@ -76,6 +76,17 @@ export function getTilesByList(ids: number[], game: Game) {
   return tiles;
 }
 
+function getEdgeAdjacentEdges(edge: Edge, game: Game): Edge[] {
+  const vertices = getVerticesByList(edge.verticeIds, game);
+  const edgeIds: number[] = [];
+  vertices.forEach((v) => {
+    v.edgeIds.forEach((e) => {
+      edgeIds.push(e);
+    })
+  });
+  const allEdges = getEdgesByList(edgeIds, game);
+  return allEdges.filter(e => e.id !== edge.id);
+}
 export function getPlayersToRob(game: Game, pId: number) {
   const robberTile: Tile = game.tiles.find(t => t.robber == true)!;
   const vertices = getVerticesByList(robberTile.verticeIds, game);
@@ -449,7 +460,17 @@ export function EndEventGameState(g: Game): Game {
   return game;
 }
 
-
+//longest road helpers
+function FilterEdgesBasedOnFriendlyRoad(pId: number, edges: Edge[], game: Game) {
+  const result: Edge[] = [];
+  edges.forEach((e) => {
+    const structure = getStructure(e.structureId, game);
+    if (structure && structure.playerId == pId) {
+      result.push(e);
+    }
+  })
+  return result;
+}
 interface Path {
   edges: Edge[];
 }
