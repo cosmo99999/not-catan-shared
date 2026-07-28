@@ -39,6 +39,18 @@ export function getPlayer(id: number, game: Game) {
   return game.players.find(v => v.id == id);
 }
 
+export function deselectVertices(g: Game) {
+  g.vertices.forEach((v) => {
+    v.highlighted = false;
+  })
+  return g;
+}
+export function deselectEdges(g: Game) {
+  g.edges.forEach((v) => {
+    v.highlighted = false;
+  })
+  return g;
+}
 export function getPlayerByGuid(guid: string, game: Game) {
   return game.players.find(v => v.guid == guid);
 }
@@ -247,6 +259,8 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
 export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
   const player = getPlayer(pId, game)!;
+  deselectEdges(game);
+  deselectVertices(game);
   for (let i = 0; i < player.devCards.length; i++) {
     player.devCards[i].purchasedThisTurn = false;
   }
@@ -397,6 +411,10 @@ export function RoadBuilding(eId: number, pId: number, g: Game): Game {
   player.structureIds.push(building.id);
   game.structures.push(building);
   edge.structureId = building.id;
+
+  if (game.gameState == GameState.Start) {
+    game = EndTurn(pId, game);
+  }
 
   return game;
 }
