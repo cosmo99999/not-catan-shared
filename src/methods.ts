@@ -76,7 +76,7 @@ export function getTilesByList(ids: number[], game: Game) {
   return tiles;
 }
 
-function getEdgeAdjacentEdges(edge: Edge, game: Game): Edge[] {
+export function getEdgeAdjacentEdges(edge: Edge, game: Game): Edge[] {
   const vertices = getVerticesByList(edge.verticeIds, game);
   const edgeIds: number[] = [];
   vertices.forEach((v) => {
@@ -461,7 +461,7 @@ export function EndEventGameState(g: Game): Game {
 }
 
 //longest road helpers
-function FilterEdgesBasedOnFriendlyRoad(pId: number, edges: Edge[], game: Game) {
+export function FilterEdgesBasedOnFriendlyRoad(pId: number, edges: Edge[], game: Game) {
   const result: Edge[] = [];
   edges.forEach((e) => {
     const structure = getStructure(e.structureId, game);
