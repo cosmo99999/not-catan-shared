@@ -448,3 +448,81 @@ export function EndEventGameState(g: Game): Game {
   game.gameState = GameState.Turn;
   return game;
 }
+
+
+interface Path {
+  edges: Edge[];
+}
+interface PathResult {
+  pId: number;
+  length: number;
+}
+function FindLongestRoadFrom(edge: Edge, game: Game) {
+  const playerId = getPlayer(getStructure(edge.structureId!, game)!.playerId, game)!.id;
+  let nextRoads: Path[] = [];
+  const exploredEdges: Edge[] = [];
+  const first = getEdgeAdjacentEdges(edge, game);
+  const firstRoads = FilterEdgesBasedOnFriendlyRoad(playerId, first, game);
+
+  firstRoads.forEach((n) => {
+    let p: Path = { edges: [] };
+    p.edges.push(n);
+    exploredEdges.push(n);
+    nextRoads.push(p);
+  })
+
+  let results: number[] = [];
+  while (nextRoads.length > 0) {
+    const nextPath = nextRoads.pop()!;
+    const lastPos = nextPath?.edges[nextPath.edges.length - 1];
+    const edges: Edge[] = getEdgeAdjacentEdges(lastPos!, game);
+    const notExplored = edges.filter(eg => !exploredEdges.some(ex => ex == eg));
+    const friendly = FilterEdgesBasedOnFriendlyRoad(playerId, notExplored, game);
+
+    if (friendly.length == 0) {
+      results.push(nextPath.edges.length);
+      continue;
+    }
+    friendly.forEach((f) => {
+      let newPath = { edges: [...nextPath.edges] };
+      newPath.edges.push(f);
+      exploredEdges.push(f);
+      nextRoads.push(newPath);
+    })
+  }
+  results.sort((a, b) => b - a);
+  return results[0];
+
+}
+export function LongestRoadCheck(pId: number, game: Game) {
+  const roads = game.structures.filter(s => s.type == StructureType.Road && s.playerId == pId);
+  const results: PathResult[] = [];
+  if (roads.length < 5) return;
+  roads.forEach((r) => {
+    const e = game.edges.find(ed => ed.structureId == r.id)!;
+    const l = FindLongestRoadFrom(e, game);
+    const res: PathResult = { pId: r.playerId, length: l + 1 };
+    results.push(res);
+  })
+
+  results.sort((a, b) => b.length - a.length);
+
+  if (results[0].length >= 5 && results[0].length > game.longestRoadSize) {
+    game.longestRoadId = results[0].pId;
+    game.longestRoadSize = results[0].length;
+  }
+}
+export function LargestArmyCheck(game: Game) {
+  game.players.forEach((p) => {
+    let knightCount = 0;
+    p.devCards.forEach((d) => {
+      if (d.played && d.type == DevCardType.Knight) {
+        knightCount++;
+      }
+    })
+    if (knightCount >= 2 && knightCount > game.largestArmySize) {
+      game.largestArmyId = p.id;
+      game.largestArmySize = knightCount;
+    }
+  })
+}
