@@ -175,6 +175,7 @@ export interface Trade {
 }
 export interface Game {
   gameStartOrderIndex: number;
+  gameStartTurnOrders: number[];
   structureIdCounter: number;
   tiles: Tile[];
   vertices: Vertice[];
@@ -200,6 +201,7 @@ export enum Location {
 export function getEmptyGame(): Game {
   return {
     gameStartOrderIndex: 0,
+    gameStartTurnOrders: [],
     tiles: [], structures: [],
     edges: [], vertices: [],
     players: [], ports: [],
