@@ -158,6 +158,7 @@ export function isVertice(obj: any): obj is Vertice {
 }
 export interface Player {
   id: number;
+  guid: string;
   name?: string;
   victoryPoints: number;
   colour: Colour;
@@ -346,10 +347,10 @@ export function randomizeBoard(game: Game): Game {
 }
 
 export function seed(game: Game): Game {
-  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
-  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
-  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
-  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
+  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false, guid: "" };
+  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false, guid: "" };
+  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false, guid: "" };
+  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false, guid: "" };
 
   p1.name = "rory";
   p2.name = "alec";
