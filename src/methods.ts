@@ -387,7 +387,7 @@ export function StartingSettlement(vId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   const player = getPlayer(pId, game)!;
   const vertex = getVertice(vId, game)!;
-  if (player.structureIds.length == 1) {
+  if (player.structureIds.length == 2) {
     player.secondPlacedSettlement = vertex;
   }
   const building = {
