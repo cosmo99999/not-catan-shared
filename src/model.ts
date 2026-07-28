@@ -162,6 +162,7 @@ export interface Player {
   resources: Resource[];
   devCards: DevCard[];
   playedDevThisTurn: boolean;
+  secondPlacedSettlement?: Vertice;
 }
 export interface Trade {
   playerId: number,
