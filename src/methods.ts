@@ -43,7 +43,6 @@ export function getPort(id: number, game: Game) {
 }
 export function getDevCard(id: number, player: Player) {
   return player.devCards.find(d => d.id == id);
-
 }
 export function getAllStructuresByPlayer(id: number, game: Game) {
   return game.structures.filter((s: Structure) => (s.playerId == id))
@@ -63,8 +62,12 @@ export function getPlayersToRob(game: Game, pId: number) {
   let players: number[] = [];
   vertices.map((v) => {
     const structure = getStructure(v.structureId, game);
-    if (structure && structure.playerId !== pId)
-      players.push(structure.playerId!);
+    if (structure && structure.playerId !== pId) {
+      let player = getPlayer(structure.playerId, game)!;
+      if (player?.resources.length > 0) {
+        players.push(structure.playerId!);
+      }
+    }
   });
 
   if (players.length == 0) return;
@@ -121,12 +124,13 @@ export function CanAfford(type: Purchase, resources: Resource[]): boolean {
 export function HandleDiceRoll(roll: number, g: Game): Game {
   const game = structuredClone(g);
   if (roll == 7) {
-    const playersWithSevenCards = game.players.filter(p => p.resources.length >= 7);
-    if (playersWithSevenCards.length > 0) {
-      game.gameState = GameState.Discard;
-    } else {
-      game.gameState = GameState.RobberPlacing;
-    }
+    const playersWithSevenCards = game.players.filter(p => p.resources.length >= 8);
+    // if (playersWithSevenCards.length > 0) {
+    //   game.gameState = GameState.Discard;
+    // } else {
+    //   game.gameState = GameState.RobberPlacing;
+    // }
+    game.gameState = GameState.RobberPlacing;
     return game;
   }
   g.tiles.forEach((t) => {
@@ -186,6 +190,7 @@ export function GetDevCard(pId: number, g: Game): Game {
   const p = getPlayer(pId, game);
   const num = getRandomInt(0, game.devCards.length);
   const devCard: DevCard = game.devCards[num];
+  devCard.purchasedThisTurn = true;
   game.devCards.splice(num, 1);
   p?.devCards.push(devCard);
   return game;
@@ -231,6 +236,10 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
 }
 export function EndTurn(pId: number, g: Game) {
   const game = structuredClone(g);
+  const player = getPlayer(pId, game)!;
+  for (let i = 0; i < player.devCards.length; i++) {
+    player.devCards[i].purchasedThisTurn = false;
+  }
   if (game.gameState !== GameState.Start) {
     const nextPlayerId = (pId + 1) % game.players.length;
     game.gameState = GameState.PreRoll;
@@ -310,7 +319,8 @@ export function Discard(resources: Resource[], pId: number, g: Game) {
 //dev card event handling
 export function PlayDevCard(dId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
-  let player = getPlayer(pId, game);
+  let player = getPlayer(pId, game)!;
+  player.playedDevThisTurn = true;
   const card = getDevCard(dId, player!)!;
   if (card?.type !== DevCardType.VP) {
     const gstate = devCardToGameState(card!.type)!;

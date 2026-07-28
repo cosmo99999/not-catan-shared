@@ -103,6 +103,7 @@ export interface DevCard {
   id: number;
   type: DevCardType;
   played: boolean;
+  purchasedThisTurn: boolean;
 }
 export interface Structure {
   id: number;
@@ -160,6 +161,7 @@ export interface Player {
   structureIds: number[];
   resources: Resource[];
   devCards: DevCard[];
+  playedDevThisTurn: boolean;
 }
 export interface Trade {
   playerId: number,
@@ -265,15 +267,15 @@ export function buildBoard(game: Game): Game {
   let devCardCounter = 0;
   for (let i = 0; i < 25; i++) {
     if (i < 14) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.Knight, played: false });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.Knight, played: false, purchasedThisTurn: false });
     } else if (i < 19) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.VP, played: false });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.VP, played: false, purchasedThisTurn: false });
     } else if (i < 21) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.RoadBuilding, played: false });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.RoadBuilding, played: false, purchasedThisTurn: false });
     } else if (i < 23) {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.Monopoly, played: false });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.Monopoly, played: false, purchasedThisTurn: false });
     } else {
-      game.devCards.push({ id: devCardCounter++, type: DevCardType.YearOfPlenty, played: false });
+      game.devCards.push({ id: devCardCounter++, type: DevCardType.YearOfPlenty, played: false, purchasedThisTurn: false });
     }
   }
   game.tiles = tiles;
@@ -338,10 +340,10 @@ export function randomizeBoard(game: Game): Game {
 }
 
 export function seed(game: Game): Game {
-  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
-  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
-  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
-  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [] };
+  const p1: Player = { id: 0, colour: Colour.Blue, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
+  const p2: Player = { id: 1, colour: Colour.White, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
+  const p3: Player = { id: 2, colour: Colour.Orange, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
+  const p4: Player = { id: 3, colour: Colour.Red, victoryPoints: 0, structureIds: [], resources: [], devCards: [], playedDevThisTurn: false };
 
   p1.name = "rory";
   p2.name = "alec";
