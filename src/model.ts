@@ -294,6 +294,7 @@ export function randomizeBoard(game: Game): Game {
   const numbers: number[] = [...possiblenumbers];
   const resources: number[] = [...possilberesources];
   const tileOffset = getRandomInt(0, 10);
+  game.ports = [];
   for (let i = 0; i < game.tiles.length; i++) {
     const t = game.tiles[(i + tileOffset) % (game.tiles.length)]!;
     if (numbers.length == 0) {
