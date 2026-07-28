@@ -55,6 +55,10 @@ export function getEdgesByList(ids: number[], game: Game) {
   const edges = game.edges.filter(v => ids.some(i => i == v.id));
   return edges;
 }
+export function getTilesByList(ids: number[], game: Game) {
+  const tiles = game.tiles.filter(v => ids.some(i => i == v.id));
+  return tiles;
+}
 
 export function getPlayersToRob(game: Game, pId: number) {
   const robberTile: Tile = game.tiles.find(t => t.robber == true)!;
@@ -74,6 +78,7 @@ export function getPlayersToRob(game: Game, pId: number) {
   return [...new Set(players.map(p => getPlayer(p!, game)))];
 }
 function AddResource(resource: Resource, pId: number, game: Game) {
+  if (resource == Resource.None || resource == undefined) return;
   const player = getPlayer(pId, game)!;
   player.resources.push(resource);
 }
@@ -245,9 +250,16 @@ export function EndTurn(pId: number, g: Game) {
     game.gameState = GameState.PreRoll;
     game.currentTurnPlayerId = nextPlayerId;
   } else {
+    //end of setup phase
     if (gameStartOrder.length == game.gameStartOrderIndex) {
       game.currentTurnPlayerId = 0;
       game.gameState = GameState.PreRoll;
+      game.players.forEach((p) => {
+        const tiles = getTilesByList(p.secondPlacedSettlement!.tileIds, game)!;
+        tiles.forEach((t) => {
+          AddResource(t.resource, p.id, game);
+        })
+      })
     } else {
       const nextPlayerId = gameStartOrder[game.gameStartOrderIndex];
       game.currentTurnPlayerId = nextPlayerId;
@@ -375,6 +387,9 @@ export function StartingSettlement(vId: number, pId: number, g: Game): Game {
   let game = structuredClone(g);
   const player = getPlayer(pId, game)!;
   const vertex = getVertice(vId, game)!;
+  if (player.structureIds.length == 1) {
+    player.secondPlacedSettlement = vertex;
+  }
   const building = {
     id: game.structureIdCounter++,
     colour: player.colour,
