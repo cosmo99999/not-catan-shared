@@ -420,7 +420,7 @@ export function StartingSettlement(vId: number, pId: number, g: Game): Game {
   return game;
 }
 
-export function YearOfPlenty(pId: number, resource: Resource, g: Game): Game {
+export function YearOfPlenty(resource: number, pId: Resource, g: Game): Game {
   const game = structuredClone(g);
   AddResource(resource, pId, game);
   return game;
