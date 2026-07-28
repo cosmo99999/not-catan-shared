@@ -314,7 +314,12 @@ export function MoveRobber(tId: number, pId: number, g: Game): Game {
   newPos!.robber = true;
   const players = getPlayersToRob(game, pId);
   if (!players || players.length == 0) {
-    game.gameState = GameState.Turn;
+    if (game.preRollRobberPlayed) {
+      game.preRollRobberPlayed = false;
+      game.gameState = GameState.PreRoll;
+    } else {
+      game.gameState = GameState.Turn;
+    }
   } else {
     game.gameState = GameState.Stealing;
   }
@@ -334,6 +339,9 @@ export function PlayDevCard(dId: number, pId: number, g: Game): Game {
   let player = getPlayer(pId, game)!;
   player.playedDevThisTurn = true;
   const card = getDevCard(dId, player!)!;
+  if (game.gameState == GameState.PreRoll) {
+    game.preRollRobberPlayed = true;
+  }
   if (card?.type !== DevCardType.VP) {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
@@ -364,6 +372,10 @@ export function Rob(targetId: number, pId: number, g: Game): Game {
   let stolen = target.resources[num];
   RemoveResource(stolen, targetId, game);
   player.resources.push(stolen);
+  if (game.preRollRobberPlayed) {
+    game.preRollRobberPlayed = false;
+    game.gameState = GameState.PreRoll;
+  }
   game.gameState = GameState.Turn;
   return game;
 }

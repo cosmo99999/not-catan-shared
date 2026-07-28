@@ -186,6 +186,7 @@ export interface Game {
   longestRoadSize: number;
   largestArmyId: number;
   largestArmySize: number;
+  preRollRobberPlayed: boolean;
 }
 export enum Location {
   Vertice,
@@ -204,6 +205,7 @@ export function getEmptyGame(): Game {
     largestArmyId: -1,
     largestArmySize: -1,
     longestRoadSize: -1,
+    preRollRobberPlayed: false,
   };
 }
 export function buildBoard(game: Game): Game {
