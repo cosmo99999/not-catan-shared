@@ -1,4 +1,4 @@
-import { DevCard, DevCardType, Edge, Game, gameStartOrder, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Tile, Trade, Vertice } from "./model";
+import { DevCard, DevCardType, Edge, Game, FourPlayerPreGameOrder, GameState, getRandomInt, isEdge, Location, Player, Purchase, Resource, Structure, StructureType, Tile, Trade, Vertice } from "./model";
 export function structureTypeToPurchase(type: StructureType): Purchase | null {
   switch (type) {
     case StructureType.Settlement: return Purchase.Settlement;
@@ -173,6 +173,7 @@ export function MakePurchase(type: Purchase, pId: number, g: Game): Game {
     case Purchase.Road: {
       RemoveResource(Resource.Wood, pId, game);
       RemoveResource(Resource.Brick, pId, game);
+      break;
     }
     case Purchase.Settlement: {
       RemoveResource(Resource.Wood, pId, game);
@@ -251,7 +252,7 @@ export function EndTurn(pId: number, g: Game) {
     game.currentTurnPlayerId = nextPlayerId;
   } else {
     //end of setup phase
-    if (gameStartOrder.length == game.gameStartOrderIndex) {
+    if (FourPlayerPreGameOrder.length == game.gameStartOrderIndex) {
       game.currentTurnPlayerId = 0;
       game.gameState = GameState.PreRoll;
       game.players.forEach((p) => {
@@ -261,7 +262,7 @@ export function EndTurn(pId: number, g: Game) {
         })
       })
     } else {
-      const nextPlayerId = gameStartOrder[game.gameStartOrderIndex];
+      const nextPlayerId = FourPlayerPreGameOrder[game.gameStartOrderIndex];
       game.currentTurnPlayerId = nextPlayerId;
       game.gameStartOrderIndex++;
     }
