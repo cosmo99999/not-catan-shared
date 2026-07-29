@@ -559,4 +559,4 @@ export function LargestArmyCheck(game: Game) {
 
 export const GlobalActions =
   [PlayDevCard, Monopoly, Rob, RoadBuilding, StartingSettlement, YearOfPlenty, EndEventGameState,
-    MoveRobber, Discard, MakeBankTrade, AcceptTrade, CancelTrade, HandleDiceRoll, MakePurchase, Buy, EndTurn];
+    MoveRobber, Discard, MakeBankTrade, AcceptTrade, CancelTrade, CreateTrade, HandleDiceRoll, MakePurchase, Buy, EndTurn];
