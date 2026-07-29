@@ -295,7 +295,7 @@ export function EndTurn(pId: number, g: Game) {
         })
       })
     } else {
-      const nextPlayerId = FourPlayerPreGameOrder[game.gameStartOrderIndex];
+      const nextPlayerId = game.gameStartTurnOrders[game.gameStartOrderIndex];
       game.currentTurnPlayerId = nextPlayerId;
       game.gameStartOrderIndex++;
     }
