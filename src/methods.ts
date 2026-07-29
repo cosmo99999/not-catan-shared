@@ -323,6 +323,7 @@ export function AcceptTrade(pId: number, g: Game): Game {
     RemoveResource(r, tradeOfferPlayerId, game);
     AddResource(r, tradeAccepterPlayerId, game);
   })
+  game.liveTradeOffer = undefined;
   return game;
 }
 export function CancelTrade(g: Game) {
