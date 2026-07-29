@@ -285,7 +285,7 @@ export function EndTurn(pId: number, g: Game) {
     game.currentTurnPlayerId = nextPlayerId;
   } else {
     //end of setup phase
-    if (FourPlayerPreGameOrder.length == game.gameStartOrderIndex) {
+    if (game.gameStartTurnOrders.length == game.gameStartOrderIndex) {
       game.currentTurnPlayerId = 0;
       game.gameState = GameState.PreRoll;
       game.players.forEach((p) => {
