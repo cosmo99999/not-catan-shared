@@ -265,6 +265,10 @@ export function Buy(space: Vertice | Edge | undefined, purchase: Purchase, pId: 
   position.structureId = building.id;
   game.structures.push(building);
   player.structureIds.push(building.id);
+
+  if (stype == StructureType.Road) {
+    LongestRoadCheck(pId, game);
+  }
   return game;
 }
 export function EndTurn(pId: number, g: Game) {
@@ -376,6 +380,9 @@ export function PlayDevCard(dId: number, pId: number, g: Game): Game {
     const gstate = devCardToGameState(card!.type)!;
     game.gameState = gstate;
   }
+  if (card.type == DevCardType.Knight) {
+    LargestArmyCheck(game);
+  }
   card.played = true;
   return game;
 }
@@ -422,6 +429,8 @@ export function RoadBuilding(eId: number, pId: number, g: Game): Game {
   player.structureIds.push(building.id);
   game.structures.push(building);
   edge.structureId = building.id;
+
+  LongestRoadCheck(pId, game);
 
   if (game.gameState == GameState.Start) {
     game = EndTurn(pId, game);
@@ -547,3 +556,7 @@ export function LargestArmyCheck(game: Game) {
     }
   })
 }
+
+export const GlobalActions =
+  [PlayDevCard, Monopoly, Rob, RoadBuilding, StartingSettlement, YearOfPlenty, EndEventGameState,
+    MoveRobber, Discard, MakeBankTrade, AcceptTrade, CancelTrade, HandleDiceRoll, MakePurchase, Buy, EndTurn];
